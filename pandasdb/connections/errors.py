@@ -1,0 +1,3 @@
+
+class KeywordNotImplementedError(Exception):
+    pass

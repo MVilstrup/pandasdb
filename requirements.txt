@@ -1,0 +1,4 @@
+influxdb
+pandas
+psycopg2
+pytest

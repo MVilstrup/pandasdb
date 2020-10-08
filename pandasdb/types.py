@@ -1,0 +1,16 @@
+from pandasdb.operators import Operator
+
+STRING = str
+INTEGER = int
+BOOLEAN = bool
+NONE = None
+FLOAT = float
+OPERATOR = Operator
+
+ALL = [STRING, INTEGER, BOOLEAN, NONE, FLOAT, OPERATOR]
+NUMBERS = [INTEGER, FLOAT]
+SUMMABLE = [INTEGER, FLOAT, BOOLEAN]
+LOGICAL = [BOOLEAN]
+OPERATIONS = [Operator]
+STRINGS = [STRING]
+IDENTIFIERS = [STRING, Operator]

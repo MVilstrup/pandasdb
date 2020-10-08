@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pandasdb/config/database.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/functools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/operators/join.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/operators/multi_arg.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/operators/operator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/operators/unary.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/operators/value.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/column/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/column/test_column.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/column/test_functools.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_binary_operators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_functional_operators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_high_level_operators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_multi_arg_operators.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/table/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pandasdb.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pandasdb.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/column.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/column.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/elastic_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/config/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/influxdb.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/redshift.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/redis.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/sqllite.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/extra_info.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/setup_databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/test.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/user.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_column/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/config/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_column/test_accessors.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_column/test_initialization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_column/test_stats.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_database/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_database/test_api.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_database/test_initialization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_grouped_data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/binary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_grouped_data/test_group_by.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_operators/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/constant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_table/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_table/test_filtering.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_table/test_initialization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_table/test_joins.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_table/test_select.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1iRsMRTCANVR0B7YojcMc1mNzdh" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/tests/postgres/table" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/postgres/table" />
+      <recent name="$PROJECT_DIR$/tests/postgres/column" />
+      <recent name="$PROJECT_DIR$/pandasdb/operators" />
+      <recent name="$PROJECT_DIR$/tests/postgres" />
+      <recent name="$PROJECT_DIR$/tests/operators" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/postgres/column" />
+      <recent name="$PROJECT_DIR$/pandasdb/functools" />
+      <recent name="$PROJECT_DIR$/pandasdb" />
+      <recent name="$PROJECT_DIR$/pandasdb/operators" />
+      <recent name="$PROJECT_DIR$/examples" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="pytest in pandasdb" type="tests" factoryName="py.test" nameIsGenerated="true">
+      <module name="pandasdb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/envs/ox/bin/python" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="" />
+      <created>1562825494784</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1562825494784</updated>
+      <workItem from="1562825498266" duration="48125000" />
+      <workItem from="1563525060343" duration="644000" />
+      <workItem from="1566472893150" duration="4094000" />
+      <workItem from="1566813057776" duration="2165000" />
+      <workItem from="1566817895286" duration="5740000" />
+      <workItem from="1566828924235" duration="770000" />
+      <workItem from="1574758401124" duration="2180000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="63718000" />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2044" y="393" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1601982502587">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2044" y="393" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982502587" />
+    <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser" timestamp="1601885259936">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601885259936" />
+    <state x="2317" y="522" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1601982231739">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2317" y="522" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982231739" />
+    <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1601881775382">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601881775382" />
+    <state width="1699" height="307" key="GridCell.Tab.0.bottom" timestamp="1602143076500">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state width="1699" height="307" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1602143076500" />
+    <state width="3419" height="390" key="GridCell.Tab.0.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
+    <state width="3419" height="307" key="GridCell.Tab.0.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602091160175" />
+    <state width="1699" height="307" key="GridCell.Tab.0.center" timestamp="1602143076499">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state width="1699" height="307" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1602143076499" />
+    <state width="3419" height="390" key="GridCell.Tab.0.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
+    <state width="3419" height="307" key="GridCell.Tab.0.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602091160174" />
+    <state width="1699" height="307" key="GridCell.Tab.0.left" timestamp="1602143076498">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state width="1699" height="307" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1602143076498" />
+    <state width="3419" height="390" key="GridCell.Tab.0.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
+    <state width="3419" height="307" key="GridCell.Tab.0.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602091160174" />
+    <state width="1699" height="307" key="GridCell.Tab.0.right" timestamp="1602143076499">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state width="1699" height="307" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1602143076499" />
+    <state width="3419" height="390" key="GridCell.Tab.0.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
+    <state width="3419" height="307" key="GridCell.Tab.0.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602091160175" />
+    <state width="3419" height="482" key="GridCell.Tab.1.bottom" timestamp="1602089616529">
+      <screen x="1792" y="-297" width="3440" height="1417" />
+    </state>
+    <state width="1699" height="482" key="GridCell.Tab.1.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="1699" height="482" key="GridCell.Tab.1.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789162" />
+    <state width="3419" height="482" key="GridCell.Tab.1.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602089616529" />
+    <state width="3419" height="482" key="GridCell.Tab.1.center" timestamp="1602089616529">
+      <screen x="1792" y="-297" width="3440" height="1417" />
+    </state>
+    <state width="1699" height="482" key="GridCell.Tab.1.center/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="1699" height="482" key="GridCell.Tab.1.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
+    <state width="3419" height="482" key="GridCell.Tab.1.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602089616529" />
+    <state width="3419" height="482" key="GridCell.Tab.1.left" timestamp="1602089616529">
+      <screen x="1792" y="-297" width="3440" height="1417" />
+    </state>
+    <state width="1699" height="482" key="GridCell.Tab.1.left/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684115" />
+    <state width="1699" height="482" key="GridCell.Tab.1.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
+    <state width="3419" height="482" key="GridCell.Tab.1.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602089616529" />
+    <state width="3419" height="482" key="GridCell.Tab.1.right" timestamp="1602089616529">
+      <screen x="1792" y="-297" width="3440" height="1417" />
+    </state>
+    <state width="1699" height="482" key="GridCell.Tab.1.right/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="1699" height="482" key="GridCell.Tab.1.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
+    <state width="3419" height="482" key="GridCell.Tab.1.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602089616529" />
+    <state x="433" y="210" key="SettingsEditor" timestamp="1602011863864">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state x="433" y="210" key="SettingsEditor/0.23.1792.1097@0.23.1792.1097" timestamp="1602011863864" />
+    <state x="3082" y="72" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1602089235306">
+      <screen x="1792" y="-297" width="3440" height="1417" />
+    </state>
+    <state x="3082" y="72" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602089235306" />
+    <state x="1019" y="23" width="1597" height="1398" key="dock-window-1" timestamp="1601980782391">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="1019" y="23" width="1597" height="1398" key="dock-window-1/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601980782391" />
+    <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup" timestamp="1601976172871">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601976172871" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/build/lib/pandasdb/table.py</url>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pandasdb/connections/sql_connection.py</url>
+          <line>47</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/pandasdb/operators/function.py</url>
+          <line>31</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
