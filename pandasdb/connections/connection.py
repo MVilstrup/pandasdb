@@ -55,9 +55,9 @@ class Connection:
     def TAB(self):
         try:
             return self._TAB
-        except:
+        except AttributeError:
             TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in self.get_tables()})
-            setattr(self, "_TBL", TAB)
+            setattr(self, "_TAB", TAB)
             return self._TAB
 
     def connect(self):

@@ -2,6 +2,7 @@ from pandasdb.connections.connection import Connection
 import pandasdb.operators as ops
 import re
 import sqlparse
+from pandasdb.utils import iterable
 
 
 class SQLConnection(Connection):
@@ -20,8 +21,8 @@ class SQLConnection(Connection):
             except:
                 return "`{}`".format(column) if str(column) in self.reserved_words else str(column)
 
-        if not isinstance(columns, list):
-            return check(columns)
+        # if iterable(columns) and not isinstance(columns, str):
+        #     return check(columns)
 
         return list(map(check, columns))
 
