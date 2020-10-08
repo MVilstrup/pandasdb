@@ -33,6 +33,6 @@ def postgres_db():
 
     tables.append(Table("car", conn.schema, lambda: conn, False, *columns))
 
-    conn._Ts = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in tables})
+    conn._TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in tables})
 
     return conn

@@ -1,12 +1,15 @@
 class Operator:
 
-    def __init__(self, supported_ops, symbol, format=lambda x: x):
+    def __init__(self, supported_ops, symbol, format=lambda x: x, **kwargs):
         self.left = None
         self.right = None
         self.accepts = []
         self._ops = supported_ops
         self.symbol = symbol
         self.format = format
+
+        for name, val in kwargs.items():
+            setattr(self, name, val)
 
     def get_type(self, value):
         try:
