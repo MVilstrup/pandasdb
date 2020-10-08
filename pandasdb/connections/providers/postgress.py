@@ -176,16 +176,26 @@ class PostgresConnection(SQLConnection):
     def execute(self, sql) -> pd.DataFrame:
         return pd.read_sql_query(sql, self.conn)
 
-    def get_tables(self):
+    def _execute_sql(self, sql):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(sql)
+            return cursor
+        except Exception as exp:
+            self.conn.rollback()
+            raise Exception(exp)
+
+    def get_tables(self, timeout=10):
         sql = """
+        SET statement_timeout = '{}s';
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema='{}'
         AND table_catalog = current_database()
         AND table_type='BASE TABLE'
-        """.format(self.schema)
-        cursor = self.conn.cursor()
-        cursor.execute(sql)
+        """.format(timeout, self.schema)
+        cursor = self._execute_sql(sql)
+
         table_names = list(map(lambda name: name[0], cursor.fetchall()))
 
         tables = []
@@ -195,9 +205,9 @@ class PostgresConnection(SQLConnection):
 
         return tables
 
-    def get_columns(self, table):
-        cursor = self.conn.cursor()
-        cursor.execute(f'select * from {self.schema}.{table} limit 1')
+    def get_columns(self, table, timeout=5):
+        cursor = self._execute_sql(f"SET statement_timeout = '{timeout}s'; select * from {self.schema}.{table} limit 1")
+
         col_names = [description[0] for description in cursor.description]
 
         col_types = []

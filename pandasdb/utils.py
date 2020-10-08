@@ -45,3 +45,6 @@ class AutoComplete:
 
     def __repr__(self):
         return str(self)
+
+    def __iter__(self):
+        return iter(self._kwargs.values())

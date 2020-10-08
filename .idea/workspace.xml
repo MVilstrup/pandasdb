@@ -3,8 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/Test PandasDB.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/data/extra_info.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/data/test.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/data/user.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/pandas playground.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/providers/create_postgres_db.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/providers/create_sqlite_db.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
