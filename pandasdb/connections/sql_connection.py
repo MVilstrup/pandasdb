@@ -11,7 +11,6 @@ class SQLConnection(Connection):
         return action, target_columns, table_name, joins, where, groups, having, meta
 
     def handle_reserved(self, columns):
-
         def check(column):
             try:
                 if column.name.upper() in self.reserved_words:
@@ -23,8 +22,10 @@ class SQLConnection(Connection):
 
         # if iterable(columns) and not isinstance(columns, str):
         #     return check(columns)
-
-        return list(map(check, columns))
+        try:
+            return list(map(check, columns))
+        except:
+            return check(columns)
 
     def query(self, action, columns, table, joins, where, groups, having, meta):
         def to_string(formatter, arr):

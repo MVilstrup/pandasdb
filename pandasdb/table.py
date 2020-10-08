@@ -35,7 +35,7 @@ class Table:
         self.db = None
         self._query = {
             "action": self._ops.SELECT(),
-            "columns": self._ops.ALL(),
+            "columns": [self._ops.ALL()],
             "where": None,
             "having": None,
             "joins": [],
