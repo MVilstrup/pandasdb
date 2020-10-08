@@ -2,63 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/pandasdb/config/database.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/functools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/operators/join.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/operators/multi_arg.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/operators/operator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/operators/unary.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/operators/value.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/column/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/column/test_column.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/column/test_functools.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_binary_operators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_functional_operators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_high_level_operators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/operators/test_multi_arg_operators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/postgres/table/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pandasdb.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pandasdb.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/column.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/column.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/elastic_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/config/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/influxdb.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/redshift.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/redis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/sqllite.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/operators.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/extra_info.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/setup_databases.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/test.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/user.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_column/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/config/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_column/test_accessors.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_column/test_initialization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_column/test_stats.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_database/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_database/test_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_database/test_initialization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_grouped_data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/binary.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_grouped_data/test_group_by.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_operators/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/constant.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_table/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_table/test_filtering.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_table/test_initialization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_table/test_joins.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_table/test_select.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -259,11 +207,6 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/build/lib/pandasdb/table.py</url>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pandasdb/connections/sql_connection.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/pandasdb/operators/function.py</url>

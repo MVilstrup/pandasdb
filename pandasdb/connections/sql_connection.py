@@ -47,61 +47,6 @@ class SQLConnection(Connection):
 
         return sqlparse.format(re.sub(r"\s+", " ", sql).strip(), reindent=True, keyword_case='upper')
 
-    @staticmethod
-    def enclose_string_value(value):
-        if value is None:
-            return ""
-        elif isinstance(value, str):
-            return "'{}'".format(value)
-        else:
-            return str(value)
-
-    @staticmethod
-    def dict_representation(operation, left=None, right=None, arguments=None):
-        return None
-
-    @staticmethod
-    def binary_operation(operation, left=None, right=None, arguments=[], enclose_string=True):
-        if enclose_string:
-            left = SQLConnection.enclose_string_value(left)
-            right = SQLConnection.enclose_string_value(right)
-
-        if operation in ["AND", "OR"]:
-            return f"({left} {operation} {right})"
-        else:
-            return f"{left} {operation} {right}"
-
-    @staticmethod
-    def unary_operation(operation, right=None, arguments=[], enclose_string=True):
-        if enclose_string:
-            right = SQLConnection.enclose_string_value(right)
-
-        return f"{operation} {right}"
-
-    @staticmethod
-    def functional_operation(operation=None, left=None, right=None, arguments=None, enclose_string=True):
-        if enclose_string:
-            arguments = list(map(SQLConnection.enclose_string_value, arguments))
-        return "{ops}({arguments})".format(ops=operation, arguments=", ".join(arguments))
-
-    @staticmethod
-    def multi_arg_operation(operation=None, left=None, right=None, arguments=None, enclose_string=False):
-        if enclose_string:
-            arguments = list(map(SQLConnection.enclose_string_value, arguments))
-        else:
-            arguments = list(map(str, arguments))
-
-        return "{ops} {arguments}".format(ops=operation, arguments=", ".join(arguments))
-
-    @staticmethod
-    def command_operation(operation=None, left=None, right=None, arguments=None, enclose_string=False):
-        if enclose_string:
-            arguments = list(map(SQLConnection.enclose_string_value, arguments))
-        else:
-            arguments = list(map(str, arguments))
-
-        return "{ops} {arguments}".format(ops=operation, arguments=" ".join(arguments))
-
     def get_tables(self):
         raise NotImplementedError("get_tables() should be implemented by all children")
 
@@ -111,8 +56,8 @@ class SQLConnection(Connection):
     def connect(self):
         raise NotImplementedError("connect() should be implemented by all children")
 
-    def accepted_types(self, operator):
-        raise NotImplementedError("accepted_types(operator) should be implemented by all children")
+    # def accepted_types(self, operator):
+    #     raise NotImplementedError("accepted_types(operator) should be implemented by all children")
 
     def execute(self, action, target_columns, table_name, joins, where, groups, having, meta):
         raise NotImplementedError(

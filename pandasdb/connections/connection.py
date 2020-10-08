@@ -39,37 +39,32 @@ class Connection:
             self.host = self._host
             self.port = self._port
 
+    def _restart_connection(self):
+        setattr(self, "_conn", self.connect())
+
     @property
     def conn(self):
         self.maybe_start_tunnel()
         if hasattr(self, "_conn"):
             return getattr(self, "_conn")
         else:
-            setattr(self, "_conn", self.connect())
+            self._restart_connection()
             return self.conn
 
     @property
-    def TBL(self):
+    def TAB(self):
         try:
-            return self._TBL
+            return self._TAB
         except:
-            TBL = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in self.get_tables()})
-            setattr(self, "_TBL", TBL)
-            return self._TBL
+            TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in self.get_tables()})
+            setattr(self, "_TBL", TAB)
+            return self._TAB
 
     def connect(self):
         raise NotImplementedError("connect() should be implemented by all children")
 
-    @staticmethod
-    def str_representation(operator):
-        raise NotImplementedError("operator(operator) should be implemented by all children")
-
-    @staticmethod
-    def dict_representation(operator):
-        raise NotImplementedError("dict_operator(operator) should be implemented by all children")
-
-    def accepted_types(self, operator):
-        raise NotImplementedError("accepted_types(operator) should be implemented by all children")
+    # def accepted_types(self, operator):
+    #     raise NotImplementedError("accepted_types(operator) should be implemented by all children")
 
     def query(self, action, columns, table_name, joins, where, groups, having, meta):
         raise NotImplementedError(

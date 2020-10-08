@@ -189,25 +189,25 @@ class Table:
 
         return self._select(*approved_columns)
 
-    def select_expr(self, *expressions: str):
-        """
-
-        :param expressions: Either columns or SQL expressions
-        :return: pandasdb.Table
-        """
-        approved_expressions = []
-        for expr in expressions:
-            if issubclass(type(expr), self._get_connection().ops.Operator):
-                if self._has_column(expr):
-                    approved_expressions.append(expr)
-                else:
-                    raise ValueError("table: {} do not have a test_column named: {}".format(self.name, expr))
-            elif isinstance(expr, str):
-                approved_expressions.append(expr)
-            else:
-                raise ValueError("The expressions should either be columns or strings")
-
-        return self._select(*expressions)
+    # def select_expr(self, *expressions: str):
+    #     """
+    #
+    #     :param expressions: Either columns or SQL expressions
+    #     :return: pandasdb.Table
+    #     """
+    #     approved_expressions = []
+    #     for expr in expressions:
+    #         if issubclass(type(expr), self._get_connection().ops.Operator):
+    #             if self._has_column(expr):
+    #                 approved_expressions.append(expr)
+    #             else:
+    #                 raise ValueError("table: {} do not have a test_column named: {}".format(self.name, expr))
+    #         elif isinstance(expr, str):
+    #             approved_expressions.append(expr)
+    #         else:
+    #             raise ValueError("The expressions should either be columns or strings")
+    #
+    #     return self._select(*expressions)
 
     def take(self, amount, offset):
         new = self.copy()
@@ -278,42 +278,42 @@ class Table:
 
         return new
 
-    def group_by(self, *columns):
-        return GroupedData(self, *columns)
+    # def group_by(self, *columns):
+    #     return GroupedData(self, *columns)
 
-    def join(self, on_table, with_column, on_column, kind="LEFT"):
-        """
-
-        :param on_table:
-        :param with_column:
-        :param on_column:
-        :param kind:
-        :return:
-        """
-        # Check the database has both the tables
-        if not self.db._has_table(on_table):
-            raise ValueError("Database do not have a table named: {}".format(on_table))
-
-        # Check the table has the test_column
-        if not self._has_column(with_column):
-            raise ValueError("table: {} do not have a test_column named: {}".format(self.name, with_column))
-
-        if isinstance(on_table, str):
-            on_table = getattr(self.db, string_to_python_attr(on_table))
-
-        new = self.copy()
-
-        if new._columns == new.target_columns:
-            new._query["columns"] += on_table._columns
-
-        new._columns += on_table._columns
-
-        new._query["joins"] += [self._ops.JOIN(kind=kind,
-                                               table_a=self.name,
-                                               column_a=with_column,
-                                               table_b=on_table.name,
-                                               column_b=on_column)]
-        return new
+    # def join(self, on_table, with_column, on_column, kind="LEFT"):
+    #     """
+    #
+    #     :param on_table:
+    #     :param with_column:
+    #     :param on_column:
+    #     :param kind:
+    #     :return:
+    #     """
+    #     # Check the database has both the tables
+    #     if not self.db._has_table(on_table):
+    #         raise ValueError("Database do not have a table named: {}".format(on_table))
+    #
+    #     # Check the table has the test_column
+    #     if not self._has_column(with_column):
+    #         raise ValueError("table: {} do not have a test_column named: {}".format(self.name, with_column))
+    #
+    #     if isinstance(on_table, str):
+    #         on_table = getattr(self.db, string_to_python_attr(on_table))
+    #
+    #     new = self.copy()
+    #
+    #     if new._columns == new.target_columns:
+    #         new._query["columns"] += on_table._columns
+    #
+    #     new._columns += on_table._columns
+    #
+    #     new._query["joins"] += [self._ops.JOIN(kind=kind,
+    #                                            table_a=self.name,
+    #                                            column_a=with_column,
+    #                                            table_b=on_table.name,
+    #                                            column_b=on_column)]
+    #     return new
 
     def df(self):
         """
