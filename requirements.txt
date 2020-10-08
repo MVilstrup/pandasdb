@@ -2,3 +2,5 @@ influxdb
 pandas
 psycopg2
 pytest
+sshtunnel
+sqlparse

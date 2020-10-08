@@ -5,9 +5,10 @@ from pandasdb.config.constants import CONNECTION_PATH, POSTGRES_TYPE, REDSHIFT_T
 from pandasdb.connections import PostgresConnection, RedshiftConnection
 
 
-def add_db(type, name, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
+def add_db(type, name, schema, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
     config = {
         "type": type,
+        "schema": schema,
         "username": username,
         "password": password,
         "tunnel": tunnel,
@@ -32,12 +33,12 @@ def add_db(type, name, username, password, host, database, port, ssh_key=None, t
     _refresh_dbs()
 
 
-def add_postgress(name, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
-    add_db("POSTGRESS", name, username, password, host, database, port, ssh_key, tunnel, ssh_username)
+def add_postgress(name, schema, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
+    add_db(POSTGRES_TYPE, name, schema, username, password, host, database, port, ssh_key, tunnel, ssh_username)
 
 
-def add_redshift(name, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
-    add_db("POSTGRESS", name, username, password, host, database, port, ssh_key, tunnel, ssh_username)
+def add_redshift(name, schema, username, password, host, database, port, ssh_key=None, tunnel=None, ssh_username=None):
+    add_db(REDSHIFT_TYPE, name, schema, username, password, host, database, port, ssh_key, tunnel, ssh_username)
 
 
 def _refresh_dbs():
