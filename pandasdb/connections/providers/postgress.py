@@ -61,8 +61,9 @@ class SupportedOps:
 
             # Higher level Operators
             ops.IN.__name__: partial(ops.IN, symbol="IN", supported_ops=self),
-            ops.NOTIN.__name__: partial(ops.NOTIN, symbol="NOT IN", supported_ops=self),
+            ops.NOT_IN.__name__: partial(ops.NOT_IN, symbol="NOT IN", supported_ops=self),
             ops.LIKE.__name__: partial(ops.LIKE, symbol="LIKE", supported_ops=self),
+            ops.NOT_LIKE.__name__: partial(ops.LIKE, symbol="NOT LIKE", supported_ops=self),
             ops.LIMIT.__name__: partial(ops.LIMIT, symbol="LIMIT", supported_ops=self),
             ops.OFFSET.__name__: partial(ops.OFFSET, symbol="OFFSET", supported_ops=self),
             ops.ALIAS.__name__: partial(ops.ALIAS, symbol="AS", supported_ops=self),
@@ -200,6 +201,9 @@ class PostgresConnection(SQLConnection):
 
         tables = []
         for name in table_names:
+            if name.startswith("_"):
+                continue
+
             columns = self.get_columns(name)
             tables.append(Table(name, self.schema, lambda: self, False, *columns))
 
@@ -222,3 +226,5 @@ class PostgresConnection(SQLConnection):
                 columns.append(self.ops.Column(name, dtype))
 
         return columns
+
+

@@ -39,8 +39,9 @@ NE = type("NE", (BinaryOperator,), {})
 
 # Higher level Operators
 IN = type("IN", (BinaryOperator,), {"_format_right": lambda self, arr: f"({', '.join([v for v in arr])})"})
-NOTIN = type("NOTIN", (BinaryOperator,), {})
+NOT_IN = type("NOT_IN", (BinaryOperator,), {})
 LIKE = type("LIKE", (BinaryOperator,), {})
+NOT_LIKE = type("NOT_LIKE", (BinaryOperator,), {})
 LIMIT = type("LIMIT", (UnaryOperator,), {})
 OFFSET = type("OFFSET", (UnaryOperator,), {})
 WHERE = type("WHERE", (UnaryOperator,), {})

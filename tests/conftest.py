@@ -17,7 +17,7 @@ def postgres_db():
     User Table
     """
     columns = []
-    for name, type in [("id", int), ("name", str), ("age", int)]:
+    for name, type in [("id", int), ("name", str), ("age", int), ("primary_user_id", int)]:
         col = conn.ops.Column(name, type)
         columns.append(col)
 
@@ -36,3 +36,8 @@ def postgres_db():
     conn._TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in tables})
 
     return conn
+
+
+@pytest.fixture(scope="session", autouse=True)
+def clean_sql():
+    return lambda s: s.replace("\n", " ").strip()

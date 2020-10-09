@@ -1,4 +1,4 @@
-from pandasdb.operators import Operator, IN, NOTIN, LIKE, SUBSTRING, Value
+from pandasdb.operators import Operator, IN, NOT_IN, LIKE, SUBSTRING, Value
 import pandasdb.functions as funcs
 from pandasdb.utils import iterable
 

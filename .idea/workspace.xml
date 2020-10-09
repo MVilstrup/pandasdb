@@ -2,17 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pandasdb/functools/lists.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/functools/strings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/plot/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/plot/graph.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/utils/auto_complete.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/utils/misc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/utils/table_graph.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/functools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/functools/test_strings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/table/test_base_case.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/table/test_filter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/utils/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/Test PandasDB.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/data/extra_info.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/data/test.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/data/user.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/pandas playground.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/providers/create_postgres_db.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/providers/create_sqlite_db.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/column.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/column.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/functools/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functools/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/utils/test_table_graph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +55,7 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/tests/postgres/table" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pandasdb/plot" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -56,18 +69,18 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pandasdb/plot" />
+      <recent name="$PROJECT_DIR$/tests/utils" />
+      <recent name="$PROJECT_DIR$/tests/postgres/functools" />
       <recent name="$PROJECT_DIR$/tests/postgres/table" />
       <recent name="$PROJECT_DIR$/tests/postgres/column" />
-      <recent name="$PROJECT_DIR$/pandasdb/operators" />
-      <recent name="$PROJECT_DIR$/tests/postgres" />
-      <recent name="$PROJECT_DIR$/tests/operators" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/utils" />
+      <recent name="$PROJECT_DIR$/tests" />
+      <recent name="$PROJECT_DIR$/pandasdb/utils" />
       <recent name="$PROJECT_DIR$/tests/postgres/column" />
       <recent name="$PROJECT_DIR$/pandasdb/functools" />
-      <recent name="$PROJECT_DIR$/pandasdb" />
-      <recent name="$PROJECT_DIR$/pandasdb/operators" />
-      <recent name="$PROJECT_DIR$/examples" />
     </key>
   </component>
   <component name="RunManager">
@@ -142,30 +155,34 @@
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601881775382" />
-    <state width="1771" height="419" key="GridCell.Tab.0.bottom" timestamp="1602155719975">
-      <screen x="0" y="23" width="1792" height="1097" />
+    <state width="3419" height="277" key="GridCell.Tab.0.bottom" timestamp="1602232298427">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state width="1771" height="419" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719975" />
+    <state width="3419" height="277" key="GridCell.Tab.0.bottom/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602232298427" />
     <state width="3419" height="390" key="GridCell.Tab.0.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
-    <state width="3419" height="419" key="GridCell.Tab.0.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602153030903" />
-    <state width="1771" height="419" key="GridCell.Tab.0.center" timestamp="1602155719974">
-      <screen x="0" y="23" width="1792" height="1097" />
+    <state width="3419" height="277" key="GridCell.Tab.0.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919737" />
+    <state width="3419" height="277" key="GridCell.Tab.0.center" timestamp="1602232298426">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state width="1771" height="419" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719974" />
+    <state width="3419" height="277" key="GridCell.Tab.0.center/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602232298426" />
     <state width="3419" height="390" key="GridCell.Tab.0.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
-    <state width="3419" height="419" key="GridCell.Tab.0.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602153030903" />
-    <state width="1771" height="419" key="GridCell.Tab.0.left" timestamp="1602155719973">
-      <screen x="0" y="23" width="1792" height="1097" />
+    <state width="3419" height="277" key="GridCell.Tab.0.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />
+    <state width="3419" height="277" key="GridCell.Tab.0.left" timestamp="1602232298426">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state width="1771" height="419" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719973" />
+    <state width="3419" height="277" key="GridCell.Tab.0.left/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602232298426" />
     <state width="3419" height="390" key="GridCell.Tab.0.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
-    <state width="3419" height="419" key="GridCell.Tab.0.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602153030902" />
-    <state width="1771" height="419" key="GridCell.Tab.0.right" timestamp="1602155719974">
-      <screen x="0" y="23" width="1792" height="1097" />
+    <state width="3419" height="277" key="GridCell.Tab.0.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919735" />
+    <state width="3419" height="277" key="GridCell.Tab.0.right" timestamp="1602232298427">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state width="1771" height="419" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719974" />
+    <state width="3419" height="277" key="GridCell.Tab.0.right/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602232298427" />
     <state width="3419" height="390" key="GridCell.Tab.0.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
-    <state width="3419" height="419" key="GridCell.Tab.0.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602153030903" />
+    <state width="3419" height="277" key="GridCell.Tab.0.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />
     <state width="3419" height="511" key="GridCell.Tab.1.bottom" timestamp="1602152973958">
       <screen x="1792" y="-297" width="3440" height="1417" />
     </state>

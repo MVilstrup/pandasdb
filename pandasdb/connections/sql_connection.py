@@ -7,6 +7,8 @@ from pandasdb.utils import iterable
 
 class SQLConnection(Connection):
 
+
+
     def optimize(self, action, target_columns, table_name, joins, where, groups, having, meta):
         return action, target_columns, table_name, joins, where, groups, having, meta
 
@@ -64,3 +66,6 @@ class SQLConnection(Connection):
     def execute(self, action, target_columns, table_name, joins, where, groups, having, meta):
         raise NotImplementedError(
             "execute( action, target_columns, table_name, joins, where, groups, having, meta) should be implemented by all children")
+
+    def _graph(self):
+        raise NotImplementedError("_graph() should be implemented by all children")

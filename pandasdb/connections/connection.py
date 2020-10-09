@@ -1,5 +1,8 @@
 from sshtunnel import SSHTunnelForwarder
-from pandasdb.utils import string_to_python_attr, AutoComplete
+from pandasdb.utils import string_to_python_attr, AutoComplete, generate_graph
+from networkx import nx
+import matplotlib.pyplot as plt
+from pandasdb.plot.graph import draw_graph
 
 
 class Connection:
@@ -22,6 +25,18 @@ class Connection:
         self.password = password
         self.database = database
         self.reserved_words = []
+
+    def graph(self, show=True, figsize=(32, 16)):
+        graph = None
+        try:
+            graph = self._graph()
+        except:
+            graph = self._graph_from_column_names()
+        finally:
+            if show:
+                draw_graph(graph, figsize)
+            else:
+                return graph
 
     def maybe_start_tunnel(self):
         if not self.forwarder and self._tunnel:
@@ -83,3 +98,9 @@ class Connection:
 
     def get_columns(self, table):
         raise NotImplementedError("get_columns(table) should be implemented by all children")
+
+    def _graph_from_column_names(self):
+        return generate_graph(self.TAB)
+
+    def _graph(self):
+        raise NotImplementedError("_graph() should be implemented by all children")

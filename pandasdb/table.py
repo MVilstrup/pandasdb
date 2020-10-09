@@ -3,14 +3,15 @@ from pandasdb.group import GroupedData
 from copy import deepcopy
 import pandas as pd
 from pandasdb.column import Column
-import pandasdb.operators  as ops
+import pandasdb.operators as ops
+import networkx as nx
+from pandasdb.plot.graph import draw_graph
 
 
 class Table:
 
     def __init__(self, name, schema, get_connection, encapsulate_name, *columns):
         """
-
         :param name:
         :param connection:
         :param columns:
@@ -337,3 +338,15 @@ class Table:
 
     def __str__(self):
         return self.query
+
+    def graph(self, figsize=(16, 8)):
+        db_graph = self.connection.graph(show=False)
+
+        G = nx.DiGraph()
+        for to_node in db_graph.neighbors(self.name):
+            G.add_edge(self.name, to_node)
+
+        for from_node in db_graph.predecessors(self.name):
+            G.add_edge(from_node, self.name)
+
+        draw_graph(G, figsize)
