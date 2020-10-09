@@ -34,7 +34,7 @@ def draw_graph(G, figsize=(24, 12)):
         graph_pos = nx.planar_layout(G)
 
     margin = max(figsize[0] / 2, 24)
-    
+
     # draw nodes, edges and labels
     nx.draw_networkx_nodes(G, graph_pos, node_size=1000, node_color=neighbour_colors(G), alpha=0.7)
     nx.draw_networkx_edges(G, graph_pos, arrowsize=22, min_target_margin=margin, min_source_margin=margin)
