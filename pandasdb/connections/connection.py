@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from sshtunnel import SSHTunnelForwarder
 from pandasdb.utils import string_to_python_attr, AutoComplete, generate_graph
 from pandasdb.plot.graph import draw_graph
@@ -37,6 +39,7 @@ class Connection:
             else:
                 return graph
 
+    @lru_cache
     def neighbours(self, table):
         G = self.graph(show=False)
 
@@ -110,8 +113,10 @@ class Connection:
     def get_columns(self, table):
         raise NotImplementedError("get_columns(table) should be implemented by all children")
 
+    @lru_cache
     def _graph_from_column_names(self):
         return generate_graph(self.Tables)
 
+    @lru_cache
     def _graph(self):
         raise NotImplementedError("_graph() should be implemented by all children")

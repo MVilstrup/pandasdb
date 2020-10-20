@@ -8,6 +8,7 @@ from psycopg2.extras import DictCursor
 from pandasdb.connections.sql.providers.postgress.operations import SupportedOps
 from pandasdb.utils import ID
 from pandasdb.record import Record
+from functools import lru_cache
 
 
 class PostgresConnection(SQLConnection):
@@ -116,6 +117,7 @@ class PostgresConnection(SQLConnection):
             self.conn.rollback()
             raise Exception(exp)
 
+    @lru_cache
     def get_tables(self, timeout=10):
         from pandasdb.table import Table
 
@@ -142,6 +144,7 @@ class PostgresConnection(SQLConnection):
 
         return tables
 
+    @lru_cache
     def get_columns(self, table, timeout=5):
         cursor = self._execute_sql(f"SET statement_timeout = '{timeout}s'; select * from {self.schema}.{table} limit 1")
 

@@ -4,13 +4,9 @@
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql/sql_query.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/sql_query.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/operators/join.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/join.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/record.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/record.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/stream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/sql_connection.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/postgres/table/test_join.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/table/test_join.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -153,35 +149,35 @@
     <state x="1208" y="381" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1792.1097@0.23.1792.1097" timestamp="1603186167623" />
     <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602502469723" />
     <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601881775382" />
-    <state width="1771" height="313" key="GridCell.Tab.0.bottom" timestamp="1603207816837">
+    <state width="1771" height="313" key="GridCell.Tab.0.bottom" timestamp="1603214254587">
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state width="1771" height="380" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728562" />
-    <state width="1771" height="313" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1603207816837" />
+    <state width="1771" height="313" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1603214254587" />
     <state width="3419" height="516" key="GridCell.Tab.0.bottom/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268550" />
     <state width="3419" height="390" key="GridCell.Tab.0.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
     <state width="3419" height="277" key="GridCell.Tab.0.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919737" />
-    <state width="1771" height="313" key="GridCell.Tab.0.center" timestamp="1603207816836">
+    <state width="1771" height="313" key="GridCell.Tab.0.center" timestamp="1603214254586">
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state width="1771" height="380" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728561" />
-    <state width="1771" height="313" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1603207816836" />
+    <state width="1771" height="313" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1603214254586" />
     <state width="3419" height="516" key="GridCell.Tab.0.center/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268549" />
     <state width="3419" height="390" key="GridCell.Tab.0.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
     <state width="3419" height="277" key="GridCell.Tab.0.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />
-    <state width="1771" height="313" key="GridCell.Tab.0.left" timestamp="1603207816836">
+    <state width="1771" height="313" key="GridCell.Tab.0.left" timestamp="1603214254586">
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state width="1771" height="380" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728561" />
-    <state width="1771" height="313" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1603207816836" />
+    <state width="1771" height="313" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1603214254586" />
     <state width="3419" height="516" key="GridCell.Tab.0.left/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268548" />
     <state width="3419" height="390" key="GridCell.Tab.0.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
     <state width="3419" height="277" key="GridCell.Tab.0.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919735" />
-    <state width="1771" height="313" key="GridCell.Tab.0.right" timestamp="1603207816837">
+    <state width="1771" height="313" key="GridCell.Tab.0.right" timestamp="1603214254587">
       <screen x="0" y="23" width="1792" height="1097" />
     </state>
     <state width="1771" height="380" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728562" />
-    <state width="1771" height="313" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1603207816837" />
+    <state width="1771" height="313" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1603214254587" />
     <state width="3419" height="516" key="GridCell.Tab.0.right/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268549" />
     <state width="3419" height="390" key="GridCell.Tab.0.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
     <state width="3419" height="277" key="GridCell.Tab.0.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />

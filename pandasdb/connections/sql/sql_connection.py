@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pandasdb.connections.connection import Connection
 import pandasdb.operators as ops
 import re
@@ -52,9 +54,11 @@ class SQLConnection(Connection):
 
         return sqlparse.format(re.sub(r"\s+", " ", sql).strip(), reindent=True, keyword_case='upper')
 
+    @lru_cache
     def get_tables(self):
         raise NotImplementedError("get_tables() should be implemented by all children")
 
+    @lru_cache
     def get_columns(self, table):
         raise NotImplementedError("get_columns(table) should be implemented by all children")
 
@@ -71,5 +75,6 @@ class SQLConnection(Connection):
         raise NotImplementedError(
             "execute( action, target_columns, table_name, joins, where, groups, having, meta) should be implemented by all children")
 
+    @lru_cache
     def _graph(self):
         raise NotImplementedError("_graph() should be implemented by all children")

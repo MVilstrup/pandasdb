@@ -9,6 +9,7 @@ from pandasdb.column import Column
 import networkx as nx
 from pandasdb.plot.graph import draw_graph
 from pandasdb.utils.table_graph import recursive_copy
+from functools import lru_cache
 
 
 class Table:
@@ -49,6 +50,7 @@ class Table:
                     AutoComplete(f"{dtype}Columns", {string_to_python_attr(col.name): col for col in columns}))
 
     @property
+    @lru_cache
     def neighbours(self):
         return AutoComplete("Nighbours",
                             {string_to_python_attr(table.name): table for table in self.connection.neighbours(self)})
@@ -92,6 +94,7 @@ class Table:
                            self.encapsulate_name, self._columns, self.query)
 
     @property
+    @lru_cache
     def columns(self):
         """
 
@@ -100,6 +103,7 @@ class Table:
         return list(map(lambda d: d.name, self._columns))
 
     @property
+    @lru_cache
     def dtypes(self):
         """
 
@@ -108,6 +112,7 @@ class Table:
         return list(map(lambda d: d.dtype, self._columns))
 
     @property
+    @lru_cache
     def length(self):
         """
 
@@ -315,7 +320,7 @@ class Table:
     def inner_join(self, on_table, on_column=None, from_column=None):
         return self.join(on_table, on_column, from_column, kind="INNER")
 
-    def left_join(self, on_table, on_column=None, from_column=None ):
+    def left_join(self, on_table, on_column=None, from_column=None):
         return self.join(on_table, on_column, from_column, kind="LEFT")
 
     def right_join(self, on_table, on_column=None, from_column=None):
@@ -351,12 +356,18 @@ class Table:
         return self.sql
 
     def graph(self, degree=1, width=16, height=8, draw=True):
+        G = self._get_graph(degree)
+
+        if draw:
+            draw_graph(G, (width, height))
+        else:
+            return G
+
+    @lru_cache
+    def _get_graph(self, degree):
         G = nx.DiGraph()
         recursive_copy(from_graph=self.connection.graph(show=False),
                        to_graph=G,
                        node=self.name,
                        d=degree)
-        if draw:
-            draw_graph(G, (width, height))
-        else:
-            return G
+        return G
