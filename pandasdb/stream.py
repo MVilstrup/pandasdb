@@ -8,7 +8,7 @@ from pandasdb.record import Record
 
 class Stream:
 
-    def __init__(self, conn, query, length):
+    def __init__(self, conn, query, length: int):
         self.table_length: int = length
         self.conn = conn
         self.query = query
@@ -68,7 +68,7 @@ class ForwardAligner:
     def __init__(self):
         self._seen_keys = {}
 
-    def align(self, record):
+    def align(self, record: Record) -> Record:
         for key, value in record:
             if key not in self._seen_keys:
                 self._seen_keys[key] = None

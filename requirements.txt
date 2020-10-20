@@ -6,3 +6,4 @@ sshtunnel
 sqlparse
 networkx
 pyvis
+numpy

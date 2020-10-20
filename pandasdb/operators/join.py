@@ -17,12 +17,4 @@ class JoinOperator(Operator):
         return []
 
     def __str__(self):
-        column_a = "{}.{}".format(self.table_a, self.column_a) if str(self.table_a) not in str(
-            self.column_a) else self.column_a
-        column_b = "{}.{}".format(self.table_b, self.column_b) if str(self.table_b) not in str(
-            self.column_b) else self.column_b
-        return self.format("{kind} {operator} {table_b} ON {column_a} = {column_b}".format(kind=self.kind,
-                                                                                           operator=self.symbol,
-                                                                                           column_a=column_a,
-                                                                                           table_b=self.table_b,
-                                                                                           column_b=column_b))
+        return self.format(f"{self.kind} {self.symbol} {self.table_b.full_name} ON {self.column_a} = {self.column_b}")

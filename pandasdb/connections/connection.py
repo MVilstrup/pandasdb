@@ -37,6 +37,15 @@ class Connection:
             else:
                 return graph
 
+    def neighbours(self, table):
+        G = self.graph(show=False)
+
+        nbrs = []
+        for name in G.neighbors(table.name):
+            nbrs.append(getattr(self.Tables, name))
+
+        return nbrs
+
     def maybe_start_tunnel(self):
         if not self.forwarder and self._tunnel:
             IP, PORT = self._tunnel

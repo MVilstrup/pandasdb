@@ -18,10 +18,10 @@ class SQLQuery(Query):
             self._where = self.ops.WHERE(condition)
 
     def join(self, statement):
-        pass
+        self._joins.append(statement)
 
     def group_by(self, groups):
-        pass
+        self._groups.append(groups)
 
     def order_by(self, *columns, ascending=True):
         order = self.ops.ASC() if ascending else self.ops.DESC()

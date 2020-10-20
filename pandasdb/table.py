@@ -49,6 +49,11 @@ class Table:
                     AutoComplete(f"{dtype}Columns", {string_to_python_attr(col.name): col for col in columns}))
 
     @property
+    def neighbours(self):
+        return AutoComplete("Nighbours",
+                            {string_to_python_attr(table.name): table for table in self.connection.neighbours(self)})
+
+    @property
     def full_name(self):
         name = f"{self.schema}.{self._name}"
         return name if not self.encapsulate_name else f'"{name}"'
@@ -221,6 +226,11 @@ class Table:
         new.query.limit(n)
         return new.df()
 
+    def limit(self, amount):
+        new = self.copy()
+        new.query.limit(amount)
+        return new
+
     def order_by(self, column, ascending=True):
         """
 
@@ -248,7 +258,7 @@ class Table:
     # def group_by(self, *columns):
     #     return GroupedData(self, *columns)
 
-    def join(self, on_table, on_column=None, from_column="id", kind="LEFT"):
+    def join(self, on_table, on_column=None, from_column=None, kind="LEFT"):
         """
 
         :param on_table:
@@ -263,18 +273,26 @@ class Table:
             except AttributeError:
                 raise ValueError(f"{on_table} not found in {self.schema}")
 
+        if on_column is None or from_column is None:
+            graph = self.graph(degree=1, draw=False)
+            _from, _to = None, None
+            try:
+                edge = graph.edges[self.name, on_table.name]
+                _from = edge["from"]
+                _to = edge["to"]
+            except:
+                edge = graph.edges[on_table.name, self.name]
+                _to = edge["from"]
+                _from = edge["to"]
+
+            on_column = on_column if on_column else _to
+            from_column = from_column if from_column else _from
+
         if isinstance(on_column, str):
             try:
                 on_column = getattr(on_table.Columns, string_to_python_attr(on_column))
             except AttributeError:
                 raise ValueError(f"{on_column} not found in table {on_table.name}")
-        elif isinstance(on_column, None):
-            try:
-                graph = self.graph(degree=1, draw=False)
-                edge = graph.edges[on_table.name, self.name]
-                return self.join(on_table, on_column, from_column=edge["from"], kind=kind)
-            except:
-                raise ValueError(f"Please could not automatically detect 'on_column'")
 
         if isinstance(from_column, str):
             try:
@@ -285,12 +303,26 @@ class Table:
         new = self.copy()
         new._columns += on_table._columns
         new.Columns = AutoComplete("Columns", {string_to_python_attr(col.name): col for col in new._columns})
-        new.query.join(self._ops.JOIN(kind=kind,
-                                      table_a=self,
-                                      column_a=from_column,
-                                      table_b=on_table,
-                                      column_b=on_column))
+
+        new.query.join(self.ops.JOIN(kind=kind,
+                                     table_a=self,
+                                     column_a=from_column,
+                                     table_b=on_table,
+                                     column_b=on_column))
+
         return new
+
+    def inner_join(self, on_table, on_column=None, from_column=None):
+        return self.join(on_table, on_column, from_column, kind="INNER")
+
+    def left_join(self, on_table, on_column=None, from_column=None ):
+        return self.join(on_table, on_column, from_column, kind="LEFT")
+
+    def right_join(self, on_table, on_column=None, from_column=None):
+        return self.join(on_table, on_column, from_column, kind="RIGHT")
+
+    def outer_join(self, on_table, on_column=None, from_column=None):
+        return self.join(on_table, on_column, from_column, kind="OUTER LEFT")
 
     def df(self):
         """

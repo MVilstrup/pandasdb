@@ -42,4 +42,4 @@ def postgres_db():
 
 @pytest.fixture(scope="session", autouse=True)
 def clean_sql():
-    return lambda s: s.replace("\n", " ").strip()
+    return lambda s: str(s).replace("\n", " ").strip()

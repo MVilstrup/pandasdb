@@ -1,3 +1,5 @@
+from typing import Optional, Callable
+
 from pandasdb.utils import json
 import numpy as np
 
@@ -9,7 +11,7 @@ class Record:
         for key, value in kwargs.items():
             self.update(key, value)
 
-    def update(self, column, value):
+    def update(self, column: str, value):
         if callable(value):
             value = value(self.get(column))
 
@@ -17,7 +19,7 @@ class Record:
         self._kwargs[column] = value
         return self
 
-    def update_where(self, value, column_cond=None, value_cond=None):
+    def update_where(self, value, column_cond: Optional[Callable] = None, value_cond: Optional[Callable] = None):
         for column, val in self._kwargs.items():
             if callable(column_cond):
                 if column_cond(column):
@@ -51,7 +53,7 @@ class Record:
             self._kwargs.pop(column)
         return Record(**self._kwargs)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str):
         return self.get(item)
 
     def __getattr__(self, name):
@@ -60,7 +62,7 @@ class Record:
 
         return self.__getattribute__(name)
 
-    def __setitem__(self, item, value):
+    def __setitem__(self, item: str, value):
         return self.update(item, value)
 
     def __add__(self, other):
