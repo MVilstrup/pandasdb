@@ -1,4 +1,5 @@
 from pandasdb.utils import json
+import numpy as np
 
 
 class Record:
@@ -9,8 +10,22 @@ class Record:
             self.update(key, value)
 
     def update(self, column, value):
+        if callable(value):
+            value = value(self.get(column))
+
         setattr(self, column, value)
         self._kwargs[column] = value
+        return self
+
+    def update_where(self, value, column_cond=None, value_cond=None):
+        for column, val in self._kwargs.items():
+            if callable(column_cond):
+                if column_cond(column):
+                    self.update(column, value)
+            if callable(value_cond):
+                if value_cond(val):
+                    self.update(column, value)
+
         return self
 
     def expand(self, column):
@@ -26,6 +41,9 @@ class Record:
         return Record(**new_kwargs)
 
     def get(self, column):
+        if column not in self._kwargs:
+            self._kwargs[column] = np.NaN
+
         return self._kwargs[column]
 
     def remove(self, *columns):
@@ -34,7 +52,13 @@ class Record:
         return Record(**self._kwargs)
 
     def __getitem__(self, item):
-        return self._kwargs[item]
+        return self.get(item)
+
+    def __getattr__(self, name):
+        if name not in ["keys", "_kwargs"] and not (name.startswith("_") or name in self._kwargs):
+            return self.get(name)
+
+        return self.__getattribute__(name)
 
     def __setitem__(self, item, value):
         return self.update(item, value)

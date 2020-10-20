@@ -2,21 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/pandasdb/record.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/stream.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/utils/json.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/postgres/table/test_join.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/sql_connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/database.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/functools/json.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functools/json.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/functools/strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functools/strings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils/auto_complete.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/auto_complete.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/misc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/utils/table_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/table_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/record.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/record.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/stream.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
