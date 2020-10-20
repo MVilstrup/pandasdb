@@ -4,7 +4,10 @@ from pandasdb.connections.sql.sql_connection import SQLConnection
 
 import pandas as pd
 import psycopg2
+from psycopg2.extras import DictCursor
 from pandasdb.connections.sql.providers.postgress.operations import SupportedOps
+from pandasdb.utils import ID
+from pandasdb.record import Record
 
 
 class PostgresConnection(SQLConnection):
@@ -94,9 +97,19 @@ class PostgresConnection(SQLConnection):
             self._restart_connection()
             self.execute(sql)
 
-    def _execute_sql(self, sql):
+    def stream(self, sql, batch_size):
+        for record in self._execute_sql(sql, name=ID(), cursor_factory=DictCursor, itersize=batch_size):
+            record = dict(record)
+            for key in [key for key in record.keys()]:
+                if key.startswith("_"):
+                    record.pop(key)
+
+            yield Record(**record)
+
+    def _execute_sql(self, sql, name=None, itersize=2000, **kwargs):
         try:
-            cursor = self.conn.cursor()
+            cursor = self.conn.cursor(name, **kwargs)
+            cursor.itersize = itersize
             cursor.execute(sql)
             return cursor
         except Exception as exp:

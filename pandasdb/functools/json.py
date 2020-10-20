@@ -4,24 +4,6 @@ from random import sample
 import json
 from pandasdb.column import Column
 
-
-class Scalar:
-    pass
-
-
-class Array:
-    pass
-
-
-class Document:
-    pass
-
-
-class JsonDocument:
-    def __init__(self, parent, value, ops, symbol):
-        pass
-
-
 class Json:
     def __init__(self, column: Column, num_samples=3):
         self._column = column

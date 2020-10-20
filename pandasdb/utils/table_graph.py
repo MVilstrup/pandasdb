@@ -16,7 +16,7 @@ def generate_graph(tables):
             fk_pattern = re.compile(f".*{from_table.name}_id.*")
             for column in to_table.Columns:
                 if fk_pattern.match(column.name):
-                    DiG.add_edge(to_table.name, from_table.name, connection=f"id <--> {column}")
+                    DiG.add_edge(to_table.name, from_table.name, **{"from": "id", "to": f"{column}"})
 
     return DiG
 
@@ -26,9 +26,9 @@ def recursive_copy(from_graph, to_graph, node, d):
         return
 
     for to_node in from_graph.neighbors(node):
-        to_graph.add_edge(node, to_node)
+        to_graph.add_edge(node, to_node, **{"to": "id", "from": f"{to_node}_id"})
         recursive_copy(from_graph, to_graph, to_node, d - 1)
 
     for from_node in from_graph.predecessors(node):
-        to_graph.add_edge(from_node, node)
+        to_graph.add_edge(from_node, node, **{"to": "id", "from": f"{node}_id"})
         recursive_copy(from_graph, to_graph, from_node, d - 1)

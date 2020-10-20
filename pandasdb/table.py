@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from pandasdb.connections.query import Query
+from pandasdb.stream import Stream
 from pandasdb.utils import string_to_python_attr, iterable, AutoComplete
 from pandasdb.group import GroupedData
 import pandas as pd
@@ -37,9 +38,7 @@ class Table:
 
             self._columns.append(column)
 
-        setattr(self,
-                "Columns",
-                AutoComplete("Columns", {string_to_python_attr(col.name): col for col in self._columns}))
+        self.Columns = AutoComplete("Columns", {string_to_python_attr(col.name): col for col in self._columns})
 
         dtypes = defaultdict(list)
         for col in self._columns:
@@ -249,39 +248,49 @@ class Table:
     # def group_by(self, *columns):
     #     return GroupedData(self, *columns)
 
-    # def join(self, on_table, with_column, on_column, kind="LEFT"):
-    #     """
-    #
-    #     :param on_table:
-    #     :param with_column:
-    #     :param on_column:
-    #     :param kind:
-    #     :return:
-    #     """
-    #     # Check the database has both the tables
-    #     if not self.db._has_table(on_table):
-    #         raise ValueError("Database do not have a table named: {}".format(on_table))
-    #
-    #     # Check the table has the test_column
-    #     if not self._has_column(with_column):
-    #         raise ValueError("table: {} do not have a test_column named: {}".format(self.name, with_column))
-    #
-    #     if isinstance(on_table, str):
-    #         on_table = getattr(self.db, string_to_python_attr(on_table))
-    #
-    #     new = self.copy()
-    #
-    #     if new._columns == new.target_columns:
-    #         new._query["columns"] += on_table._columns
-    #
-    #     new._columns += on_table._columns
-    #
-    #     new._query["joins"] += [self._ops.JOIN(kind=kind,
-    #                                            table_a=self.name,
-    #                                            column_a=with_column,
-    #                                            table_b=on_table.name,
-    #                                            column_b=on_column)]
-    #     return new
+    def join(self, on_table, on_column=None, from_column="id", kind="LEFT"):
+        """
+
+        :param on_table:
+        :param with_column:
+        :param on_column:
+        :param kind:
+        :return:
+        """
+        if isinstance(on_table, str):
+            try:
+                on_table = getattr(self.connection.Tables, string_to_python_attr(on_table))
+            except AttributeError:
+                raise ValueError(f"{on_table} not found in {self.schema}")
+
+        if isinstance(on_column, str):
+            try:
+                on_column = getattr(on_table.Columns, string_to_python_attr(on_column))
+            except AttributeError:
+                raise ValueError(f"{on_column} not found in table {on_table.name}")
+        elif isinstance(on_column, None):
+            try:
+                graph = self.graph(degree=1, draw=False)
+                edge = graph.edges[on_table.name, self.name]
+                return self.join(on_table, on_column, from_column=edge["from"], kind=kind)
+            except:
+                raise ValueError(f"Please could not automatically detect 'on_column'")
+
+        if isinstance(from_column, str):
+            try:
+                from_column = getattr(self.Columns, string_to_python_attr(from_column))
+            except AttributeError:
+                raise ValueError(f"{from_column} not found in table {self.name}")
+
+        new = self.copy()
+        new._columns += on_table._columns
+        new.Columns = AutoComplete("Columns", {string_to_python_attr(col.name): col for col in new._columns})
+        new.query.join(self._ops.JOIN(kind=kind,
+                                      table_a=self,
+                                      column_a=from_column,
+                                      table_b=on_table,
+                                      column_b=on_column))
+        return new
 
     def df(self):
         """
@@ -303,14 +312,19 @@ class Table:
         # In all other cases it is returned as a dataframe
         return df
 
+    def stream(self):
+        return Stream(self.connection, str(self.query), self.length)
+
     def __str__(self):
         return self.sql
 
-    def graph(self, degree=1, width=16, height=8):
+    def graph(self, degree=1, width=16, height=8, draw=True):
         G = nx.DiGraph()
         recursive_copy(from_graph=self.connection.graph(show=False),
                        to_graph=G,
                        node=self.name,
                        d=degree)
-
-        draw_graph(G, (width, height))
+        if draw:
+            draw_graph(G, (width, height))
+        else:
+            return G

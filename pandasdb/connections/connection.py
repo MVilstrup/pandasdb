@@ -77,6 +77,9 @@ class Connection:
     def connect(self):
         raise NotImplementedError("connect() should be implemented by all children")
 
+    def stream(self, sql, batch_size):
+        raise NotImplementedError("stream() should be implemented by all children")
+
     # def accepted_types(self, operator):
     #     raise NotImplementedError("accepted_types(operator) should be implemented by all children")
 

@@ -1,5 +1,5 @@
 from pandasdb.utils.misc import string_to_python_attr
-
+from copy import deepcopy
 
 class AutoComplete:
     def __init__(self, name, kwargs):
@@ -13,6 +13,11 @@ class AutoComplete:
 
     def __repr__(self):
         return str(self)
+
+    def __add__(self, other):
+        kwargs = deepcopy(self._kwargs)
+        kwargs.update(other._kwargs)
+        return AutoComplete(self.name, kwargs)
 
     def __iter__(self):
         return iter(self._kwargs.values())

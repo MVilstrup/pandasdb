@@ -1,7 +1,7 @@
 import re
 import inspect
 from copy import deepcopy
-
+import uuid
 
 def curr_func():
     return inspect.stack()[0][3]
@@ -49,3 +49,7 @@ def maybe_copy(element):
         return deepcopy(element) if not hasattr(element, "copy") else element.copy()
     except:
         return element
+
+
+def ID():
+    return uuid.uuid4().hex[:6].upper()
