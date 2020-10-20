@@ -1,1 +1,0 @@
-from pandasdb.config.database import add_postgress, add_redshift

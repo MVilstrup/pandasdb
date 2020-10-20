@@ -1,2 +1,2 @@
-from pandasdb.connections.providers.postgress import PostgresConnection
-from pandasdb.connections.providers.redshift import RedshiftConnection
+from pandasdb.connections.sql.providers.postgress import PostgresConnection
+from pandasdb.connections.sql.providers.redshift import RedshiftConnection

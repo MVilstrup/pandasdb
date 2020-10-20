@@ -1,13 +1,18 @@
+from copy import deepcopy
+
 from pandasdb.operators.operator import Operator
-from pandasdb.utils import iterable
+from pandasdb.utils import iterable, maybe_copy
 
 
 class Value(Operator):
 
-    def __init__(self, right, supported_ops, symbol, format=lambda x: x):
+    def __init__(self, right, supported_ops, symbol, format):
         Operator.__init__(self, supported_ops, symbol, format)
         self.right = right
-        self.dtype = type(right)
+        self.dtype = type(right) if not hasattr(right, "dtype") else right.dtype
+
+    def copy(self):
+        return Value(right=maybe_copy(self.right), supported_ops=self._ops, symbol=self.symbol, format=self.format)
 
     @property
     def children(self):

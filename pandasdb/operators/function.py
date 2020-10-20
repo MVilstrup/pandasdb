@@ -1,5 +1,7 @@
+from copy import deepcopy
+
 from pandasdb.operators.operator import Operator
-from pandasdb.utils import iterable
+from pandasdb.utils import iterable, maybe_copy
 
 
 class FunctionOperator(Operator):
@@ -11,6 +13,9 @@ class FunctionOperator(Operator):
             arguments = [arguments]
 
         self.arguments = arguments
+
+    def copy(self):
+        return FunctionOperator(list(map(maybe_copy, self.arguments)), supported_ops=self._ops, symbol=self.symbol, format=self.format)
 
     @property
     def children(self):

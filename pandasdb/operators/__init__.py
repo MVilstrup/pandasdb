@@ -28,6 +28,7 @@ SELECT = type("SELECT", (ConstantOperator,), {})
 ASC = type("ASC", (ConstantOperator,), {})
 DESC = type("DESC", (ConstantOperator,), {})
 ALL = type("ALL", (ConstantOperator,), {})
+JSON = type("JSON", (ConstantOperator,), {})
 
 # Comparison Operators
 LT = type("LT", (BinaryOperator,), {})

@@ -1,16 +1,18 @@
-from pandasdb.utils import string_to_python_attr, type_check, iterable, AutoComplete
+from collections import defaultdict
+
+from pandasdb.connections.query import Query
+from pandasdb.utils import string_to_python_attr, iterable, AutoComplete
 from pandasdb.group import GroupedData
-from copy import deepcopy
 import pandas as pd
 from pandasdb.column import Column
-import pandasdb.operators as ops
 import networkx as nx
 from pandasdb.plot.graph import draw_graph
+from pandasdb.utils.table_graph import recursive_copy
 
 
 class Table:
 
-    def __init__(self, name, schema, get_connection, encapsulate_name, *columns):
+    def __init__(self, name, schema, connection, encapsulate_name, columns):
         """
         :param name:
         :param connection:
@@ -19,8 +21,13 @@ class Table:
         self._name = name
         self.schema = schema
         self.encapsulate_name = encapsulate_name
-        self._get_connection = get_connection
-        self._ops = self._get_connection().ops
+        self.connection = connection
+        self.ops = self.connection.ops
+
+        self.query: Query = self.connection.QueryClass(ops=self.ops,
+                                                       action=self.ops.SELECT(),
+                                                       columns=[self.ops.ALL()],
+                                                       table=self.full_name)
 
         # Add the columns as attibutes to the table to make them easier to access
         self._columns = []
@@ -30,23 +37,17 @@ class Table:
 
             self._columns.append(column)
 
-        COLs = AutoComplete("Columns", {string_to_python_attr(col.name): col for col in self._columns})
-        setattr(self, "COL", COLs)
+        setattr(self,
+                "Columns",
+                AutoComplete("Columns", {string_to_python_attr(col.name): col for col in self._columns}))
 
-        self.db = None
-        self._query = {
-            "action": self._ops.SELECT(),
-            "columns": [self._ops.ALL()],
-            "where": None,
-            "having": None,
-            "joins": [],
-            "groups": [],
-            "meta": []
-        }
+        dtypes = defaultdict(list)
+        for col in self._columns:
+            dtypes[str(col.dtype.__name__).capitalize()].append(col)
 
-    @property
-    def connection(self):
-        return self._get_connection()
+        for dtype, columns in dtypes.items():
+            setattr(self, f"{dtype}Columns",
+                    AutoComplete(f"{dtype}Columns", {string_to_python_attr(col.name): col for col in columns}))
 
     @property
     def full_name(self):
@@ -59,7 +60,7 @@ class Table:
         return name if not self.encapsulate_name else f'"{name}"'
 
     @classmethod
-    def _copy(cls, name, schema, get_connection, encapsulate_name, columns, query):
+    def _copy(cls, name, schema, connections, encapsulate_name, columns, query):
         """
         :param name:
         :param connection:
@@ -74,8 +75,8 @@ class Table:
         :return:
         """
 
-        table = Table(name, schema, get_connection, encapsulate_name, *columns)
-        table._query = deepcopy(query)
+        table = Table(name, schema, connections, encapsulate_name, columns)
+        table.query = query.copy()
         return table
 
     def copy(self):
@@ -83,8 +84,8 @@ class Table:
 
         :return:
         """
-        return Table._copy(self._name, self.schema, self._get_connection,
-                           self.encapsulate_name, self._columns, self._query)
+        return Table._copy(self._name, self.schema, self.connection,
+                           self.encapsulate_name, self._columns, self.query)
 
     @property
     def columns(self):
@@ -102,33 +103,23 @@ class Table:
         """
         return list(map(lambda d: d.dtype, self._columns))
 
-    # @property
-    # def length(self):
-    #     """
-    #
-    #     :return:
-    #     """
-    #     new = self.copy()
-    #     new.target_columns = [self._ops.COUNT(self._ops.ALL())]
-    #     return new.df()["COUNT(*)"].values[0]
-
     @property
-    def query(self):
+    def length(self):
         """
 
         :return:
         """
-        query = deepcopy(self._query)
+        new = self.copy()
+        new.query.select(self.ops.COUNT(self.ops.ALL()))
+        return new.df()
 
-        where = self._query["where"]
-        query["where"] = self._ops.WHERE(where) if where else ""
+    @property
+    def sql(self):
+        """
 
-        having = self._query["having"]
-        query["having"] = self._ops.HAVING(having) if having else ""
-
-        query["table"] = self.full_name
-
-        return self.connection.query(**query)
+        :return:
+        """
+        return str(self.query)
 
     def _has_column(self, column):
         """
@@ -136,26 +127,18 @@ class Table:
         :param column:
         :return:
         """
-        if isinstance(column, Column) and not hasattr(self.COL, string_to_python_attr(column.name)):
+        if isinstance(column, Column) and not hasattr(self.Columns, string_to_python_attr(column.name)):
             return False
         elif isinstance(column, str) and not any([column == c.name for c in self._columns]):
             return False
         return True
-
-    def _add_db(self, db):
-        """
-
-        :param db:
-        :return:
-        """
-        self.db = db
 
     def _execute(self):
         """
 
         :return:
         """
-        return self.connection.execute(self.query)
+        return self.connection.execute(self.sql)
 
     def _select(self, *columns):
         """
@@ -164,7 +147,7 @@ class Table:
         :return:
         """
         new = self.copy()
-        new._query["columns"] = columns
+        new.query.select(*columns)
         return new
 
     def select(self, *columns: str):
@@ -183,36 +166,37 @@ class Table:
                 all_columns.append(col)
 
         for column in all_columns:
-            if self._has_column(column):
+            if self._has_column(column) or isinstance(column, Column):
                 approved_columns.append(column)
             else:
                 raise ValueError("table: {} do not have a test_column named: {}".format(self.name, column))
 
         return self._select(*approved_columns)
 
-    # def select_expr(self, *expressions: str):
-    #     """
-    #
-    #     :param expressions: Either columns or SQL expressions
-    #     :return: pandasdb.Table
-    #     """
-    #     approved_expressions = []
-    #     for expr in expressions:
-    #         if issubclass(type(expr), self._get_connection().ops.Operator):
-    #             if self._has_column(expr):
-    #                 approved_expressions.append(expr)
-    #             else:
-    #                 raise ValueError("table: {} do not have a test_column named: {}".format(self.name, expr))
-    #         elif isinstance(expr, str):
-    #             approved_expressions.append(expr)
-    #         else:
-    #             raise ValueError("The expressions should either be columns or strings")
-    #
-    #     return self._select(*expressions)
+    def select_expr(self, *expressions: str):
+        """
+
+        :param expressions: Either columns or SQL expressions
+        :return: pandasdb.Table
+        """
+        approved_expressions = []
+        for expr in expressions:
+            if issubclass(type(expr), self.ops.Operator):
+                if self._has_column(expr) or isinstance(expr, Column):
+                    approved_expressions.append(expr)
+                else:
+                    raise ValueError("table: {} do not have a test_column named: {}".format(self.name, expr))
+            elif isinstance(expr, str):
+                approved_expressions.append(expr)
+            else:
+                raise ValueError("The expressions should either be columns or strings")
+
+        return self._select(*expressions)
 
     def take(self, amount, offset):
         new = self.copy()
-        new._query["meta"] += [self._ops.LIMIT(amount), self._ops.OFFSET(offset)]
+        new.query.limit(amount)
+        new.query.offset(offset)
         return new
 
     def where(self, condition):
@@ -225,23 +209,7 @@ class Table:
         :return:
         """
         new = self.copy()
-
-        having_ops = [ops.AVG, ops.COUNT, ops.MIN, ops.MAX, ops.SUM]
-        if any([condition.includes(ops) for ops in having_ops]):
-            if len(condition.children > 2):
-                raise ValueError(
-                    "PandasDB cannot handle a mix of having and where filters. Use multiple filters to seperate them")
-            else:
-                if new._query["having"] is not None:
-                    new._query["having"] = self._ops.AND(self._query["having"], condition)
-                else:
-                    new._query["having"] = condition
-
-        if new._query["where"] is not None:
-            new._query["where"] = self._ops.AND(self._query["where"], condition)
-        else:
-            new._query["where"] = condition
-
+        new.query.where(condition)
         return new
 
     def head(self, n=5):
@@ -251,8 +219,8 @@ class Table:
         :return:
         """
         new = self.copy()
-        new._query["meta"] += [self._ops.LIMIT(n)]
-        return new
+        new.query.limit(n)
+        return new.df()
 
     def order_by(self, column, ascending=True):
         """
@@ -263,20 +231,19 @@ class Table:
         """
         return self.sort(column, ascending)
 
-    def sort(self, column, ascending=True):
+    def sort(self, *columns, ascending=True):
         """
 
         :param column:
         :param ascending:
         :return:
         """
-        if not self._has_column(column):
-            raise ValueError("table: {} do not have a test_column named: {}".format(self.name, column))
+        for column in columns:
+            if not self._has_column(column):
+                raise ValueError("table: {} do not have a test_column named: {}".format(self.name, column))
 
         new = self.copy()
-        order = self._ops.ASC() if ascending else self._ops.DESC()
-        new._query["meta"] += [self._ops.ORDER_BY(column), order]
-
+        new.query.order_by(*columns, ascending=ascending)
         return new
 
     # def group_by(self, *columns):
@@ -337,16 +304,13 @@ class Table:
         return df
 
     def __str__(self):
-        return self.query
+        return self.sql
 
-    def graph(self, figsize=(16, 8)):
-        db_graph = self.connection.graph(show=False)
-
+    def graph(self, degree=1, width=16, height=8):
         G = nx.DiGraph()
-        for to_node in db_graph.neighbors(self.name):
-            G.add_edge(self.name, to_node)
+        recursive_copy(from_graph=self.connection.graph(show=False),
+                       to_graph=G,
+                       node=self.name,
+                       d=degree)
 
-        for from_node in db_graph.predecessors(self.name):
-            G.add_edge(from_node, self.name)
-
-        draw_graph(G, figsize)
+        draw_graph(G, (width, height))

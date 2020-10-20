@@ -1,11 +1,13 @@
 from pandasdb import Column
 from pandasdb.utils import curr_func
 
+
 def like(column, pattern):
     assert isinstance(column, Column), f"{curr_func()} can only be applied to Columns"
     assert isinstance(pattern, str), "pattern should be a string"
 
     return column._ops.LIKE(column, column._ops.Value(pattern))
+
 
 def not_like(column, pattern):
     assert isinstance(column, Column), f"{curr_func()} can only be applied to Columns"

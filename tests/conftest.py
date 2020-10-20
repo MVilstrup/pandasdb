@@ -4,11 +4,13 @@ from pandasdb.connections import PostgresConnection
 import pandas as pd
 import pytest
 from pandasdb.utils import AutoComplete, string_to_python_attr
+from pandasdb.connections.sql.sql_query import SQLQuery
 
 
 @pytest.fixture(scope="session", autouse=True)
 def postgres_db():
-    conn = PostgresConnection(host=None, schema="test", username=None, password=None, database="test", port=5432,
+    conn = PostgresConnection(host=None, name="test", type="POSTGRES", schema="test", username=None, password=None,
+                              database="test", port=5432,
                               tunnel=None, ssh_username=None, ssh_key=None)
 
     tables = []
@@ -21,7 +23,7 @@ def postgres_db():
         col = conn.ops.Column(name, type)
         columns.append(col)
 
-    tables.append(Table("user", conn.schema, lambda: conn, False, *columns))
+    tables.append(Table("user", conn.schema, conn, False, columns))
 
     """
     Car Table
@@ -31,7 +33,7 @@ def postgres_db():
         col = conn.ops.Column(name, type)
         columns.append(col)
 
-    tables.append(Table("car", conn.schema, lambda: conn, False, *columns))
+    tables.append(Table("car", conn.schema, conn, False, columns))
 
     conn._TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in tables})
 

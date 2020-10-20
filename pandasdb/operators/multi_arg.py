@@ -1,5 +1,8 @@
+from copy import deepcopy
+
 from pandasdb.operators.operator import Operator
 from pandasdb.operators.value import Value
+from pandasdb.utils import maybe_copy
 
 
 class MultiArgOperator(Operator):
@@ -8,6 +11,9 @@ class MultiArgOperator(Operator):
         if not isinstance(columns, list):
             columns = [columns]
         self.columns = self._ops.Value(columns)
+
+    def copy(self):
+        return MultiArgOperator(list(map(maybe_copy, self.columns)), supported_ops=self._ops, symbol=self.symbol, format=self.format)
 
     @property
     def children(self):

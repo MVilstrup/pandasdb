@@ -1,6 +1,9 @@
-from pandasdb.operators import Operator, IN, NOT_IN, LIKE, SUBSTRING, Value
+from copy import deepcopy
+
+from pandasdb.operators import Operator
 import pandasdb.functions as funcs
-from pandasdb.utils import iterable
+from pandasdb.utils import AutoComplete
+from collections import defaultdict
 
 
 class Column(Operator):
@@ -10,6 +13,17 @@ class Column(Operator):
         self.dtype = dtype
         self.table = None
         Operator.__init__(self, supported_ops, symbol)
+
+    def copy(self):
+        return Column(name=self.name, dtype=self.dtype, supported_ops=self._ops, symbol=self.symbol)
+
+    @property
+    def length(self):
+        return self.table.length
+
+    @property
+    def sql(self):
+        return self.table.select(self).sql
 
     @property
     def full_name(self):
@@ -32,6 +46,12 @@ class Column(Operator):
 
     def sum(self):
         return self.table.select(funcs.sum(self._ops, self))
+
+    def head(self, n=5):
+        return self.table.select(self).head(n)
+
+    def take(self, amount, offset):
+        return self.table.select(self).take(amount, offset)
 
     def df(self):
         table = self.table.select(self)

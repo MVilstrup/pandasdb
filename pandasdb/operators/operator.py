@@ -1,15 +1,17 @@
+from copy import deepcopy
+
+
 class Operator:
 
-    def __init__(self, supported_ops, symbol, format=lambda x: x, **kwargs):
+    def __init__(self, supported_ops, symbol, format=lambda x: x):
         self.left = None
         self.right = None
-        self.accepts = []
         self._ops = supported_ops
         self.symbol = symbol
         self.format = format
 
-        for name, val in kwargs.items():
-            setattr(self, name, val)
+    def copy(self):
+        assert NotImplementedError("copy should be implemented by children")
 
     def get_type(self, value):
         try:

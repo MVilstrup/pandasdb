@@ -10,6 +10,8 @@ class JoinOperator(Operator):
         self.column_a = column_a
         self.column_b = column_b
 
+
+
     @property
     def children(self):
         return []

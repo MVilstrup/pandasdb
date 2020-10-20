@@ -2,8 +2,56 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pandasdb/_config/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/_config/add_dbs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/column/array.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/column/document.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/column/scalar.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/query.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/connection.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress/operations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/connections/sql/sql_query.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/functools/json.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pandasdb/utils/aync.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/plot/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/plot/graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/column.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/column/column.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/config/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/config/constants.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/config/database.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/column/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/postgress.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/providers/redshift.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/providers/redshift.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/connections/sql_connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/connections/sql/sql_connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/functools/lists.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functools/lists.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/functools/strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/functools/strings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/group.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/group.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/binary.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/binary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/constant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/function.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/join.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/join.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/multi_arg.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/multi_arg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/operator.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/operator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/unary.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/unary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/operators/value.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/operators/value.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/plot/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/plot/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/types.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/types.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/misc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/utils/table_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/utils/table_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/postgres/column/test_column.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/column/test_column.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/postgres/column/test_functools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/column/test_functools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/postgres/functools/test_strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/functools/test_strings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/postgres/table/test_base_case.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/table/test_base_case.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/postgres/table/test_filter.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/postgres/table/test_filter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/utils/test_table_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/utils/test_table_graph.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,9 +80,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/pandasdb/plot" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -47,19 +96,19 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress" />
+      <recent name="$PROJECT_DIR$/pandasdb/column" />
+      <recent name="$PROJECT_DIR$/pandasdb/connections/sql" />
+      <recent name="$PROJECT_DIR$/pandasdb/connections" />
+      <recent name="$PROJECT_DIR$/pandasdb/_config" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pandasdb/connections/sql/providers/postgress" />
       <recent name="$PROJECT_DIR$/pandasdb/plot" />
       <recent name="$PROJECT_DIR$/tests/utils" />
       <recent name="$PROJECT_DIR$/tests/postgres/functools" />
       <recent name="$PROJECT_DIR$/tests/postgres/table" />
-      <recent name="$PROJECT_DIR$/tests/postgres/column" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/tests/utils" />
-      <recent name="$PROJECT_DIR$/tests" />
-      <recent name="$PROJECT_DIR$/pandasdb/utils" />
-      <recent name="$PROJECT_DIR$/tests/postgres/column" />
-      <recent name="$PROJECT_DIR$/pandasdb/functools" />
     </key>
   </component>
   <component name="RunManager">
@@ -122,68 +171,90 @@
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state x="2044" y="393" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982502587" />
-    <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser" timestamp="1601885259936">
+    <state x="100" y="123" width="3240" height="1217" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog" timestamp="1603111170589">
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state x="100" y="123" width="3240" height="1217" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603111170589" />
+    <state x="1469" y="531" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1602515803992">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="1469" y="531" key="#com.intellij.fileTypes.FileTypeChooser/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602515803992" />
+    <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser" timestamp="1602516638000">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602516638000" />
     <state x="2393" y="454" key="#com.intellij.ide.util.MemberChooser/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601885259936" />
     <state x="2317" y="522" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1601982231739">
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state x="2317" y="522" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982231739" />
-    <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1601881775382">
+    <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1602502469723">
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602502469723" />
     <state x="2318" y="485" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601881775382" />
-    <state width="3419" height="277" key="GridCell.Tab.0.bottom" timestamp="1602252718898">
-      <screen x="0" y="23" width="3440" height="1417" />
+    <state width="1771" height="313" key="GridCell.Tab.0.bottom" timestamp="1603177353302">
+      <screen x="0" y="23" width="1792" height="1097" />
     </state>
-    <state width="1771" height="419" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719975" />
-    <state width="3419" height="277" key="GridCell.Tab.0.bottom/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602252718898" />
+    <state width="1771" height="380" key="GridCell.Tab.0.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728562" />
+    <state width="1771" height="313" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1603177353302" />
+    <state width="3419" height="516" key="GridCell.Tab.0.bottom/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268550" />
     <state width="3419" height="390" key="GridCell.Tab.0.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
     <state width="3419" height="277" key="GridCell.Tab.0.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919737" />
-    <state width="3419" height="277" key="GridCell.Tab.0.center" timestamp="1602252718897">
-      <screen x="0" y="23" width="3440" height="1417" />
+    <state width="1771" height="313" key="GridCell.Tab.0.center" timestamp="1603177353301">
+      <screen x="0" y="23" width="1792" height="1097" />
     </state>
-    <state width="1771" height="419" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719974" />
-    <state width="3419" height="277" key="GridCell.Tab.0.center/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602252718897" />
+    <state width="1771" height="380" key="GridCell.Tab.0.center/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728561" />
+    <state width="1771" height="313" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1603177353301" />
+    <state width="3419" height="516" key="GridCell.Tab.0.center/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268549" />
     <state width="3419" height="390" key="GridCell.Tab.0.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
     <state width="3419" height="277" key="GridCell.Tab.0.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />
-    <state width="3419" height="277" key="GridCell.Tab.0.left" timestamp="1602252718896">
-      <screen x="0" y="23" width="3440" height="1417" />
+    <state width="1771" height="313" key="GridCell.Tab.0.left" timestamp="1603177353301">
+      <screen x="0" y="23" width="1792" height="1097" />
     </state>
-    <state width="1771" height="419" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719973" />
-    <state width="3419" height="277" key="GridCell.Tab.0.left/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602252718896" />
+    <state width="1771" height="380" key="GridCell.Tab.0.left/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728561" />
+    <state width="1771" height="313" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1603177353301" />
+    <state width="3419" height="516" key="GridCell.Tab.0.left/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268548" />
     <state width="3419" height="390" key="GridCell.Tab.0.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798515" />
     <state width="3419" height="277" key="GridCell.Tab.0.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919735" />
-    <state width="3419" height="277" key="GridCell.Tab.0.right" timestamp="1602252718897">
-      <screen x="0" y="23" width="3440" height="1417" />
+    <state width="1771" height="313" key="GridCell.Tab.0.right" timestamp="1603177353302">
+      <screen x="0" y="23" width="1792" height="1097" />
     </state>
-    <state width="1771" height="419" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1602155719974" />
-    <state width="3419" height="277" key="GridCell.Tab.0.right/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602252718897" />
+    <state width="1771" height="380" key="GridCell.Tab.0.right/0.0.1792.1120@0.0.1792.1120" timestamp="1602773728562" />
+    <state width="1771" height="313" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1603177353302" />
+    <state width="3419" height="516" key="GridCell.Tab.0.right/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603121268549" />
     <state width="3419" height="390" key="GridCell.Tab.0.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601985798516" />
     <state width="3419" height="277" key="GridCell.Tab.0.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602162919736" />
-    <state width="3419" height="511" key="GridCell.Tab.1.bottom" timestamp="1602152973958">
-      <screen x="1792" y="-297" width="3440" height="1417" />
+    <state width="3419" height="509" key="GridCell.Tab.1.bottom" timestamp="1603111189350">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state width="1771" height="375" key="GridCell.Tab.1.bottom/0.0.1792.1120@0.0.1792.1120" timestamp="1602772003081" />
     <state width="1699" height="482" key="GridCell.Tab.1.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="3419" height="509" key="GridCell.Tab.1.bottom/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603111189350" />
     <state width="1699" height="482" key="GridCell.Tab.1.bottom/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789162" />
     <state width="3419" height="511" key="GridCell.Tab.1.bottom/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602152973958" />
-    <state width="3419" height="511" key="GridCell.Tab.1.center" timestamp="1602152973958">
-      <screen x="1792" y="-297" width="3440" height="1417" />
+    <state width="3419" height="509" key="GridCell.Tab.1.center" timestamp="1603111189349">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state width="1771" height="375" key="GridCell.Tab.1.center/0.0.1792.1120@0.0.1792.1120" timestamp="1602772003081" />
     <state width="1699" height="482" key="GridCell.Tab.1.center/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="3419" height="509" key="GridCell.Tab.1.center/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603111189349" />
     <state width="1699" height="482" key="GridCell.Tab.1.center/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
     <state width="3419" height="511" key="GridCell.Tab.1.center/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602152973958" />
-    <state width="3419" height="511" key="GridCell.Tab.1.left" timestamp="1602152973958">
-      <screen x="1792" y="-297" width="3440" height="1417" />
+    <state width="3419" height="509" key="GridCell.Tab.1.left" timestamp="1603111189349">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state width="1771" height="375" key="GridCell.Tab.1.left/0.0.1792.1120@0.0.1792.1120" timestamp="1602772003080" />
     <state width="1699" height="482" key="GridCell.Tab.1.left/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684115" />
+    <state width="3419" height="509" key="GridCell.Tab.1.left/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603111189349" />
     <state width="1699" height="482" key="GridCell.Tab.1.left/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
     <state width="3419" height="511" key="GridCell.Tab.1.left/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602152973958" />
-    <state width="3419" height="511" key="GridCell.Tab.1.right" timestamp="1602152973958">
-      <screen x="1792" y="-297" width="3440" height="1417" />
+    <state width="3419" height="509" key="GridCell.Tab.1.right" timestamp="1603111189350">
+      <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state width="1771" height="375" key="GridCell.Tab.1.right/0.0.1792.1120@0.0.1792.1120" timestamp="1602772003081" />
     <state width="1699" height="482" key="GridCell.Tab.1.right/0.23.1792.1097@0.23.1792.1097" timestamp="1602060684116" />
+    <state width="3419" height="509" key="GridCell.Tab.1.right/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603111189350" />
     <state width="1699" height="482" key="GridCell.Tab.1.right/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601982789161" />
     <state width="3419" height="511" key="GridCell.Tab.1.right/1792.-297.3440.1417/0.23.1792.1097@1792.-297.3440.1417" timestamp="1602152973958" />
     <state x="433" y="210" key="SettingsEditor" timestamp="1602011863864">
@@ -198,9 +269,14 @@
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
     <state x="1019" y="23" width="1597" height="1398" key="dock-window-1/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601980782391" />
-    <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup" timestamp="1601976172871">
+    <state x="1318" y="295" width="803" height="873" key="find.popup" timestamp="1602515121948">
       <screen x="0" y="23" width="3440" height="1417" />
     </state>
+    <state x="1318" y="295" width="803" height="873" key="find.popup/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1602515121948" />
+    <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup" timestamp="1603109854274">
+      <screen x="0" y="23" width="3440" height="1417" />
+    </state>
+    <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup/0.23.3440.1417/-1792.343.1792.1097@0.23.3440.1417" timestamp="1603109854274" />
     <state x="2245" y="348" width="670" height="676" key="search.everywhere.popup/0.23.3440.1417/3440.343.1792.1097@0.23.3440.1417" timestamp="1601976172871" />
   </component>
   <component name="XDebuggerManager">
@@ -211,14 +287,9 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/pandasdb/operators/function.py</url>
-          <line>31</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests/postgres/column/test_column.py</url>
-          <line>21</line>
-          <option name="timeStamp" value="17" />
+          <line>16</line>
+          <option name="timeStamp" value="26" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

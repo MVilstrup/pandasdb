@@ -1,16 +1,15 @@
 from sshtunnel import SSHTunnelForwarder
 from pandasdb.utils import string_to_python_attr, AutoComplete, generate_graph
-from networkx import nx
-import matplotlib.pyplot as plt
 from pandasdb.plot.graph import draw_graph
 
 
 class Connection:
 
-    def __init__(self, host="", schema="public", username="", password="", port=-1, database="", tunnel=None,
-                 ssh_username=None,
-                 ssh_key=None):
+    def __init__(self, name="", host="", schema="public", username="", password="", port=-1, database="", tunnel=None,
+                 ssh_username=None, ssh_key=None, type=""):
 
+        self.name = name
+        self.db_type = type
         self.schema = schema
         self._tunnel = tunnel
         self._ssh_username = ssh_username
@@ -26,7 +25,7 @@ class Connection:
         self.database = database
         self.reserved_words = []
 
-    def graph(self, show=True, figsize=(32, 16)):
+    def graph(self, show=True, width=32, height=16):
         graph = None
         try:
             graph = self._graph()
@@ -34,7 +33,7 @@ class Connection:
             graph = self._graph_from_column_names()
         finally:
             if show:
-                draw_graph(graph, figsize)
+                draw_graph(graph, (width, height))
             else:
                 return graph
 
@@ -67,7 +66,7 @@ class Connection:
             return self.conn
 
     @property
-    def TAB(self):
+    def Tables(self):
         try:
             return self._TAB
         except AttributeError:
@@ -100,7 +99,7 @@ class Connection:
         raise NotImplementedError("get_columns(table) should be implemented by all children")
 
     def _graph_from_column_names(self):
-        return generate_graph(self.TAB)
+        return generate_graph(self.Tables)
 
     def _graph(self):
         raise NotImplementedError("_graph() should be implemented by all children")

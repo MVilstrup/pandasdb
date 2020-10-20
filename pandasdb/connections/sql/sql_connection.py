@@ -2,12 +2,13 @@ from pandasdb.connections.connection import Connection
 import pandasdb.operators as ops
 import re
 import sqlparse
+
+from pandasdb.connections.sql.sql_query import SQLQuery
 from pandasdb.utils import iterable
 
 
 class SQLConnection(Connection):
-
-
+    QueryClass = SQLQuery
 
     def optimize(self, action, target_columns, table_name, joins, where, groups, having, meta):
         return action, target_columns, table_name, joins, where, groups, having, meta

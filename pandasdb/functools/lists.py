@@ -3,14 +3,16 @@ from pandasdb.utils import iterable, curr_func
 
 
 def is_in(column, values):
-    assert isinstance(column, Column), f"{curr_func()} can only be applied to Columns"
+    func = curr_func()
+    assert isinstance(column, Column), f"{func} can only be applied to Columns"
     assert iterable(values), "values should be a list"
 
     return column._ops.IN(column, column._ops.Value(values))
 
 
 def not_in(column, values):
-    assert isinstance(column, Column), f"{curr_func()} can only be applied to Columns"
+    func = curr_func()
+    assert isinstance(column, Column), f"{func} can only be applied to Columns"
     assert iterable(values), "values should be a list"
 
     return column._ops.NOT_IN(column, column._ops.Value(values))
