@@ -277,11 +277,11 @@ class Table:
 
         all_columns = {}
         for connect in shortest_join(G, self.name, on_table.name):
-            from_table = self.connection.Tables.get(connect.from_table)
-            from_column = from_table.Columns.get(connect.from_column)
+            from_table = self.connection.Tables[connect.from_table]
+            from_column = from_table.Columns[connect.from_column]
 
-            to_table = self.connection.Tables.get(connect.to_table)
-            to_column = to_table.Columns.get(connect.to_column)
+            to_table = self.connection.Tables[connect.to_table]
+            to_column = to_table.Columns[connect.to_column]
 
             all_columns.update({col.name: col for col in from_table._columns})
             all_columns.update({col.name: col for col in to_table._columns})
@@ -308,7 +308,7 @@ class Table:
         :return:
         """
         if isinstance(on_table, str):
-            on_table = self.connection.Tables.get(on_table)
+            on_table = self.connection.Tables[on_table]
 
         if on_column is None or from_column is None:
             graph = self.graph(degree=1, draw=False)
@@ -326,10 +326,10 @@ class Table:
             from_column = from_column if from_column else _from
 
         if isinstance(on_column, str):
-            on_column = on_table.Columns.get(on_column)
+            on_column = on_table.Columns[on_column]
 
         if isinstance(from_column, str):
-            from_column = self.Columns.get(from_column)
+            from_column = self.Columns[from_column]
 
         new = self.copy()
         new._columns += on_table._columns
