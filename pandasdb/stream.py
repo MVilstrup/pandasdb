@@ -1,7 +1,7 @@
+from datetime import datetime
 from typing import Optional, List, Tuple, Callable, Iterator
 
 import pandas as pd
-from datetime import datetime
 
 from pandasdb.record import Record
 
@@ -27,20 +27,26 @@ class Stream:
         if self._last_iteration is not None:
             if (datetime.now() - self._last_iteration).seconds > 1:
                 self._stream = None
+                self._last_iteration = None
 
         # Indicate we just used the stream
         self._last_iteration = datetime.now()
 
         try:
-            record = next(self._stream)
-
-            for _type, transform in self._transformations:
-                if _type == "APPLY":
-                    record = transform(record)
-                else:
-                    if not transform(record):
-                        return next(self)
-            return record
+            try:
+                record = next(self._stream)
+            except StopIteration:
+                self._stream = None
+                self._last_iteration = None
+                raise StopIteration()
+            else:
+                for _type, transform in self._transformations:
+                    if _type == "APPLY":
+                        record = transform(record)
+                    else:
+                        if not transform(record):
+                            return next(self)
+                return record
         except TypeError:
             self._stream = iter(self.conn.stream(str(self.query), self._batch_size))
             return next(self)

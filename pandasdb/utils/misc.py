@@ -1,7 +1,12 @@
-import re
 import inspect
-from copy import deepcopy
+import re
 import uuid
+from copy import deepcopy
+
+
+def snake_to_camel(word):
+    return ''.join(x.capitalize() or '_' for x in word.split('_'))
+
 
 def curr_func():
     return inspect.stack()[0][3]
@@ -28,6 +33,7 @@ def camel_to_snake(name):
 
 
 def string_to_python_attr(name):
+    name = name.split(".")[-1]
     return camel_to_snake(name).replace(" ", "_").lower().replace('"', "")
 
 
@@ -43,6 +49,7 @@ def string_if(element, formatter=""):
         return formatter.join(map(str, element))
 
     return f"{element}"
+
 
 def maybe_copy(element):
     try:

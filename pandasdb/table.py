@@ -1,15 +1,16 @@
 from collections import defaultdict
-
-from pandasdb.connections.query import Query
-from pandasdb.stream import Stream
-from pandasdb.utils import string_to_python_attr, iterable, AutoComplete
-from pandasdb.group import GroupedData
-import pandas as pd
-from pandasdb.column import Column
-import networkx as nx
-from pandasdb.plot.graph import draw_graph
-from pandasdb.utils.table_graph import recursive_copy
 from functools import lru_cache
+
+import networkx as nx
+import pandas as pd
+
+from pandasdb.column import Column
+from pandasdb.connections.query import Query
+from pandasdb.plot.graph import draw_graph
+from pandasdb.stream import Stream
+from pandasdb.utils import snake_to_camel
+from pandasdb.utils import string_to_python_attr, iterable, AutoComplete
+from pandasdb.utils.table_graph import recursive_copy, shortest_join
 
 
 class Table:
@@ -39,7 +40,8 @@ class Table:
 
             self._columns.append(column)
 
-        self.Columns = AutoComplete("Columns", {string_to_python_attr(col.name): col for col in self._columns})
+        self.Columns = AutoComplete(f"{snake_to_camel(self.name)}Columns",
+                                    {string_to_python_attr(col.name): col for col in self._columns})
 
         dtypes = defaultdict(list)
         for col in self._columns:
@@ -263,20 +265,50 @@ class Table:
     # def group_by(self, *columns):
     #     return GroupedData(self, *columns)
 
-    def join(self, on_table, on_column=None, from_column=None, kind="LEFT"):
-        """
-
-        :param on_table:
-        :param with_column:
-        :param on_column:
-        :param kind:
-        :return:
-        """
+    def _shortest_join(self, on_table, kind):
         if isinstance(on_table, str):
             try:
                 on_table = getattr(self.connection.Tables, string_to_python_attr(on_table))
             except AttributeError:
                 raise ValueError(f"{on_table} not found in {self.schema}")
+
+        G = self.connection.graph(show=False)
+        new = self.copy()
+
+        all_columns = {}
+        for connect in shortest_join(G, self.name, on_table.name):
+            from_table = self.connection.Tables.get(connect.from_table)
+            from_column = from_table.Columns.get(connect.from_column)
+
+            to_table = self.connection.Tables.get(connect.to_table)
+            to_column = to_table.Columns.get(connect.to_column)
+
+            all_columns.update({col.name: col for col in from_table._columns})
+            all_columns.update({col.name: col for col in to_table._columns})
+
+            new.query.join(self.ops.JOIN(kind=kind,
+                                         table_a=from_table,
+                                         column_a=from_column,
+                                         table_b=to_table,
+                                         column_b=to_column))
+
+        new._columns = list(all_columns.values())
+        new.Columns = AutoComplete(f"{snake_to_camel(new.name)}Columns",
+                                   {string_to_python_attr(col.name): col for col in new._columns})
+
+        return new
+
+    def join(self, on_table, on_column=None, from_column=None, kind="LEFT"):
+        """
+
+        :param on_table:
+        :param from_column:
+        :param on_column:
+        :param kind:
+        :return:
+        """
+        if isinstance(on_table, str):
+            on_table = self.connection.Tables.get(on_table)
 
         if on_column is None or from_column is None:
             graph = self.graph(degree=1, draw=False)
@@ -294,16 +326,10 @@ class Table:
             from_column = from_column if from_column else _from
 
         if isinstance(on_column, str):
-            try:
-                on_column = getattr(on_table.Columns, string_to_python_attr(on_column))
-            except AttributeError:
-                raise ValueError(f"{on_column} not found in table {on_table.name}")
+            on_column = on_table.Columns.get(on_column)
 
         if isinstance(from_column, str):
-            try:
-                from_column = getattr(self.Columns, string_to_python_attr(from_column))
-            except AttributeError:
-                raise ValueError(f"{from_column} not found in table {self.name}")
+            from_column = self.Columns.get(from_column)
 
         new = self.copy()
         new._columns += on_table._columns
@@ -317,17 +343,17 @@ class Table:
 
         return new
 
-    def inner_join(self, on_table, on_column=None, from_column=None):
-        return self.join(on_table, on_column, from_column, kind="INNER")
+    def inner_join(self, on_table):
+        return self._shortest_join(on_table, kind="INNER")
 
-    def left_join(self, on_table, on_column=None, from_column=None):
-        return self.join(on_table, on_column, from_column, kind="LEFT")
+    def left_join(self, on_table):
+        return self._shortest_join(on_table, kind="LEFT")
 
-    def right_join(self, on_table, on_column=None, from_column=None):
-        return self.join(on_table, on_column, from_column, kind="RIGHT")
+    def right_join(self, on_table):
+        return self._shortest_join(on_table, kind="RIGHT")
 
-    def outer_join(self, on_table, on_column=None, from_column=None):
-        return self.join(on_table, on_column, from_column, kind="OUTER LEFT")
+    def outer_join(self, on_table):
+        return self._shortest_join(on_table, kind="OUTER LEFT")
 
     def df(self):
         """

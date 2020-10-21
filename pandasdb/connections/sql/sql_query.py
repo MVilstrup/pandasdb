@@ -48,8 +48,8 @@ class SQLQuery(Query):
             string_if(self._where),
             string_if(self._groups, formatter=" "),
             string_if(self._order_by, formatter=" "),
+            string_if(self._offset),
             string_if(self._limit),
-            string_if(self._order_by)
         ]
 
         formatted_sql = re.sub(r"\s+", " ", " ".join(sql)).strip()
