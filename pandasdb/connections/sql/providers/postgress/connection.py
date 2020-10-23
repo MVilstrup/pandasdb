@@ -12,7 +12,6 @@ from pandasdb.utils import ID
 
 
 class PostgresConnection(SQLConnection):
-    ops = SupportedOps()
 
     def __init__(self, name, host, schema, username, password, database, type, port=5432, tunnel=None,
                  ssh_username=None,
@@ -22,81 +21,17 @@ class PostgresConnection(SQLConnection):
                                database=database, tunnel=tunnel, ssh_username=ssh_username, ssh_key=ssh_key, type=type)
         self.reserved_words = ["INDEX"]
 
-    def connect(self):
-        try:
-            return psycopg2.connect(user=self.username,
-                                    password=self.password,
-                                    host=self.host,
-                                    port=self.port,
-                                    database=self.database)
-        except Exception as exp:
-            raise ConnectionError("Could not connect to database. Error: {}".format(exp))
+    @property
+    def ops(self):
+        return SupportedOps()
 
-    # @staticmethod
-    # def accepted_types(self, operator):
-    #     accepted_types = {
-    #         # Numeric Operators
-    #         ops.ADD.__name__: types.NUMBERS,
-    #         ops.SUB.__name__: types.NUMBERS,
-    #         ops.MUL.__name__: types.NUMBERS,
-    #         ops.DIV.__name__: types.NUMBERS,
-    #         ops.MOD.__name__: types.NUMBERS,
-    #         ops.POW.__name__: types.NUMBERS,
-    #
-    #         # Logical Operators
-    #         ops.AND.__name__: types.LOGICAL,
-    #         ops.OR.__name__: types.LOGICAL,
-    #         ops.NOT.__name__: types.LOGICAL,
-    #
-    #         # Comparison Operators
-    #         ops.LT.__name__: types.NUMBERS,
-    #         ops.GT.__name__: types.NUMBERS,
-    #         ops.LE.__name__: types.NUMBERS,
-    #         ops.GE.__name__: types.NUMBERS,
-    #         ops.EQ.__name__: types.ALL,
-    #         ops.NE.__name__: types.ALL,
-    #
-    #         # Higher level Operators
-    #         ops.IN.__name__: types.ALL,
-    #         ops.NOTIN.__name__: types.ALL,
-    #         ops.LIKE.__name__: types.ALL,
-    #         ops.LIMIT.__name__: types.NUMBERS,
-    #         ops.OFFSET.__name__: types.NUMBERS,
-    #         ops.ALIAS.__name__: types.IDENTIFIERS,
-    #         ops.ORDER_BY.__name__: types.IDENTIFIERS,
-    #         ops.GROUP_BY.__name__: types.IDENTIFIERS,
-    #         ops.JOIN.__name__: types.IDENTIFIERS,
-    #         ops.WHERE.__name__: types.IDENTIFIERS,
-    #         ops.HAVING.__name__: types.IDENTIFIERS,
-    #
-    #         # Function Operators
-    #         ops.MIN.__name__: types.NUMBERS,
-    #         ops.MAX.__name__: types.NUMBERS,
-    #         ops.AVG.__name__: types.SUMMABLE,
-    #         ops.SUM.__name__: types.SUMMABLE,
-    #         ops.COUNT.__name__: types.ALL,
-    #         ops.SUBSTRING.__name__: types.STRING,
-    #
-    #         # Constant Operators
-    #         ops.SELECT.__name__: types.ALL,
-    #         ops.ASC.__name__: types.ALL,
-    #         ops.DESC.__name__: types.ALL,
-    #         ops.ALL.__name__: types.ALL,
-    #
-    #         Column.__name__: types.ALL
-    #     }
-    #
-    #     if operator.__class__.__name__ not in accepted_types:
-    #         raise ValueError("{} is not implemented in SQLite".format(operator.__class__.__name__))
-    #
-    #     return accepted_types[operator.__class__.__name__]
+    @property
+    def _conn_func(self):
+        return psycopg2.connect
 
     def execute(self, sql) -> pd.DataFrame:
-        try:
-            return pd.read_sql_query(sql, self.conn)
-        except InterfaceError:
-            self._restart_connection()
-            self.execute(sql)
+        with self.conn as conn:
+            return pd.read_sql_query(sql, conn)
 
     def stream(self, sql, batch_size):
         for record in self._execute_sql(sql, name=ID(), cursor_factory=DictCursor, itersize=batch_size):
@@ -108,14 +43,15 @@ class PostgresConnection(SQLConnection):
             yield Record(**record)
 
     def _execute_sql(self, sql, name=None, itersize=2000, **kwargs):
-        try:
-            cursor = self.conn.cursor(name, **kwargs)
-            cursor.itersize = itersize
-            cursor.execute(sql)
-            return cursor
-        except Exception as exp:
-            self.conn.rollback()
-            raise Exception(exp)
+        with self.conn as conn:
+            try:
+                cursor = conn.cursor(name, **kwargs)
+                cursor.itersize = itersize
+                cursor.execute(sql)
+                return cursor
+            except Exception as exp:
+                conn.rollback()
+                raise Exception(exp)
 
     @lru_cache
     def get_tables(self, timeout=10):

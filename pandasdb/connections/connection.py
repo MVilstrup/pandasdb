@@ -1,8 +1,8 @@
 from functools import lru_cache
 
-from sshtunnel import SSHTunnelForwarder
 from pandasdb.utils import string_to_python_attr, AutoComplete, generate_graph
 from pandasdb.plot.graph import draw_graph
+from pandasdb.connections.tunnel import Tunnel
 
 
 class Connection:
@@ -16,12 +16,9 @@ class Connection:
         self._tunnel = tunnel
         self._ssh_username = ssh_username
         self._ssh_key = ssh_key
-        self._port = port
-        self._host = host
-
         self.forwarder = None
-        self.host = None
-        self.port = None
+        self.host = host
+        self.port = port
         self.username = username
         self.password = password
         self.database = database
@@ -49,33 +46,11 @@ class Connection:
 
         return nbrs
 
-    def maybe_start_tunnel(self):
-        if not self.forwarder and self._tunnel:
-            IP, PORT = self._tunnel
-            self.forwarder = SSHTunnelForwarder((IP, int(PORT)),
-                                                ssh_private_key=self._ssh_key,
-                                                ssh_username=self._ssh_username,
-                                                remote_bind_address=(self._host, int(self._port)))
-            self.forwarder.daemon_forward_servers = True
-            self.forwarder.start()
-
-            self.port = self.forwarder.local_bind_port
-            self.host = "localhost"
-        else:
-            self.host = self._host
-            self.port = self._port
-
-    def _restart_connection(self):
-        setattr(self, "_conn", self.connect())
-
     @property
     def conn(self):
-        self.maybe_start_tunnel()
-        if hasattr(self, "_conn"):
-            return getattr(self, "_conn")
-        else:
-            self._restart_connection()
-            return self.conn
+        return Tunnel(self._conn_func, host=self.host, username=self.username, password=self.password, port=self.port,
+                      database=self.database, tunnel=self._tunnel, ssh_username=self._ssh_username,
+                      ssh_key=self._ssh_key)
 
     @property
     def Tables(self):
@@ -86,8 +61,8 @@ class Connection:
             setattr(self, "_TAB", TAB)
             return self._TAB
 
-    def connect(self):
-        raise NotImplementedError("connect() should be implemented by all children")
+    def _conn_func(self):
+        raise NotImplementedError("_conn_func() should be implemented by all children")
 
     def stream(self, sql, batch_size):
         raise NotImplementedError("stream() should be implemented by all children")
