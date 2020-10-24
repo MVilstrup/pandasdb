@@ -22,12 +22,12 @@ class DataBaseConfig:
             "schema": schema if schema is not None else conn.schema,
             "username": username if username is not None else conn.username,
             "password": password if password is not None else conn.password,
-            "tunnel": tunnel if tunnel is not None else conn._tunnel,
-            "ssh_username": ssh_username if ssh_username is not None else conn._ssh_username,
-            "host": host if host is not None else conn._host,
+            "tunnel": tunnel if tunnel is not None else conn.tunnel,
+            "ssh_username": ssh_username if ssh_username is not None else conn.ssh_username,
+            "host": host if host is not None else conn.host,
             "database": database if database is not None else conn.database,
-            "port": port if port is not None else conn._port,
-            "ssh_key": ssh_key if ssh_key is not None else conn._ssh_key,
+            "port": port if port is not None else conn.port,
+            "ssh_key": ssh_key if ssh_key is not None else conn.ssh_key,
         }
 
         self._add_db(**kwargs)

@@ -27,6 +27,12 @@ class Tunnel:
         if self._tunnel:
             self._forwarder.start()
             self._port = self._forwarder.local_bind_port
+
+        self._conn = self._establish_connection(user=self._username,
+                                                password=self._password,
+                                                host=self._host,
+                                                port=self._port,
+                                                database=self._database)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -37,9 +43,4 @@ class Tunnel:
         if item.startswith("_"):
             return self.__getattribute__(item)
 
-        conn = self._establish_connection(user=self._username,
-                                          password=self._password,
-                                          host=self._host,
-                                          port=self._port,
-                                          database=self._database)
-        return getattr(conn, item)
+        return getattr(self._conn, item)

@@ -4,6 +4,7 @@ import pandas as pd
 import psycopg2
 from psycopg2._psycopg import InterfaceError
 from psycopg2.extras import DictCursor
+from sqlalchemy import create_engine
 
 from pandasdb.connections.sql.providers.redshift.operations import SupportedOps
 from pandasdb.connections.sql.sql_connection import SQLConnection
@@ -12,7 +13,6 @@ from pandasdb.utils import ID
 
 
 class RedshiftConnection(SQLConnection):
-    ops = SupportedOps()
 
     def __init__(self, name, host, schema, username, password, database, type, port=5432, tunnel=None,
                  ssh_username=None,
@@ -22,22 +22,24 @@ class RedshiftConnection(SQLConnection):
                                database=database, tunnel=tunnel, ssh_username=ssh_username, ssh_key=ssh_key, type=type)
         self.reserved_words = ["INDEX"]
 
-    def connect(self):
-        try:
-            return psycopg2.connect(user=self.username,
-                                    password=self.password,
-                                    host=self.host,
-                                    port=self.port,
-                                    database=self.database)
-        except Exception as exp:
-            raise ConnectionError("Could not connect to database. Error: {}".format(exp))
+    @property
+    def ops(self):
+        return SupportedOps()
+
+    @property
+    def _conn_func(self):
+        return psycopg2.connect
+
+    @property
+    def _engine_func(self):
+        def engine(user, password, host, port, database):
+            return create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}").connect()
+
+        return engine
 
     def execute(self, sql) -> pd.DataFrame:
-        try:
-            return pd.read_sql_query(sql, self.conn)
-        except InterfaceError:
-            self._restart_connection()
-            self.execute(sql)
+        with self.conn as conn:
+            return pd.read_sql_query(sql, conn)
 
     def stream(self, sql, batch_size):
         for record in self._execute_sql(sql, name=ID(), cursor_factory=DictCursor, itersize=batch_size):
@@ -49,16 +51,18 @@ class RedshiftConnection(SQLConnection):
             yield Record(**record)
 
     def _execute_sql(self, sql, name=None, itersize=2000, **kwargs):
-        try:
-            cursor = self.conn.cursor(name, **kwargs)
-            cursor.itersize = itersize
-            cursor.execute(sql)
-            return cursor
-        except Exception as exp:
-            self.conn.rollback()
-            raise Exception(exp)
+        with self.conn as conn:
+            try:
+                cursor = conn.cursor(name, **kwargs)
+                cursor.itersize = itersize
+                cursor.execute(sql)
+                return cursor
+            except Exception as exp:
+                conn.rollback()
+                raise Exception(exp)
 
-    def get_tables(self, timeout=10):
+
+    def get_tables(self, with_columns=True):
         from pandasdb.table import Table
 
         sql = """
@@ -68,13 +72,12 @@ class RedshiftConnection(SQLConnection):
         and table_catalog = current_database()
         order by t.table_name;
         """.format(self.schema)
-        print(sql)
 
         cursor = self._execute_sql(sql)
         tables = cursor.fetchall()
-        print(tables)
         table_names = list(map(lambda name: name[0], tables))
-        print(table_names)
+        if not with_columns:
+            return table_names
 
         tables = []
         for name in table_names:
@@ -104,3 +107,4 @@ class RedshiftConnection(SQLConnection):
                 columns.append(self.ops.Column(name, dtype))
 
         return columns
+

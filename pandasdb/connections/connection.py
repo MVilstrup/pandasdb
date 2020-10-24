@@ -13,9 +13,9 @@ class Connection:
         self.name = name
         self.db_type = type
         self.schema = schema
-        self._tunnel = tunnel
-        self._ssh_username = ssh_username
-        self._ssh_key = ssh_key
+        self.tunnel = tunnel
+        self.ssh_username = ssh_username
+        self.ssh_key = ssh_key
         self.forwarder = None
         self.host = host
         self.port = port
@@ -49,8 +49,15 @@ class Connection:
     @property
     def conn(self):
         return Tunnel(self._conn_func, host=self.host, username=self.username, password=self.password, port=self.port,
-                      database=self.database, tunnel=self._tunnel, ssh_username=self._ssh_username,
-                      ssh_key=self._ssh_key)
+                      database=self.database, tunnel=self.tunnel, ssh_username=self.ssh_username,
+                      ssh_key=self.ssh_key)
+
+    @property
+    def engine(self):
+        return Tunnel(self._engine_func, host=self.host, username=self.username, password=self.password, port=self.port,
+                      database=self.database, tunnel=self.tunnel, ssh_username=self.ssh_username,
+                      ssh_key=self.ssh_key)
+
 
     @property
     def Tables(self):
@@ -60,6 +67,9 @@ class Connection:
             TAB = AutoComplete("Tables", {string_to_python_attr(table.name): table for table in self.get_tables()})
             setattr(self, "_TAB", TAB)
             return self._TAB
+
+    def _engine_func(self):
+        raise NotImplementedError("engine() should be implemented by all children")
 
     def _conn_func(self):
         raise NotImplementedError("_conn_func() should be implemented by all children")
@@ -82,7 +92,7 @@ class Connection:
         raise NotImplementedError(
             "optimize( action, target_columns, table_name, joins, where_conditions, groups, having_conditions, meta) should be implemented by all children")
 
-    def get_tables(self):
+    def get_tables(self, with_columns):
         raise NotImplementedError("get_tables() should be implemented by all children")
 
     def get_columns(self, table):

@@ -55,7 +55,7 @@ class SQLConnection(Connection):
         return sqlparse.format(re.sub(r"\s+", " ", sql).strip(), reindent=True, keyword_case='upper')
 
     @lru_cache
-    def get_tables(self):
+    def get_tables(self, with_columns):
         raise NotImplementedError("get_tables() should be implemented by all children")
 
     @lru_cache

@@ -2,6 +2,7 @@ from functools import lru_cache
 
 import pandas as pd
 import psycopg2
+from sqlalchemy import create_engine
 from psycopg2._psycopg import InterfaceError
 from psycopg2.extras import DictCursor
 
@@ -29,6 +30,13 @@ class PostgresConnection(SQLConnection):
     def _conn_func(self):
         return psycopg2.connect
 
+    @property
+    def _engine_func(self):
+        def engine(user, password, host, port, database, **kwargs):
+            return create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}").connect()
+
+        return engine
+
     def execute(self, sql) -> pd.DataFrame:
         with self.conn as conn:
             return pd.read_sql_query(sql, conn)
@@ -54,7 +62,7 @@ class PostgresConnection(SQLConnection):
                 raise Exception(exp)
 
     @lru_cache
-    def get_tables(self, timeout=10):
+    def get_tables(self, with_columns=True):
         from pandasdb.table import Table
 
         sql = """
@@ -68,6 +76,8 @@ class PostgresConnection(SQLConnection):
         cursor = self._execute_sql(sql)
 
         table_names = list(map(lambda name: name[0], cursor.fetchall()))
+        if not with_columns:
+            return table_names
 
         tables = []
         for name in table_names:
