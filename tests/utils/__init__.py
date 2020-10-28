@@ -1,4 +1,4 @@
-import pandasdb.utils as utils
+import pandasdb.sql.utils as utils
 
 
 def test_iterable():
