@@ -2,20 +2,22 @@ from datetime import datetime
 from typing import Optional, List, Tuple, Callable, Iterator
 
 import pandas as pd
+from pandas._libs.lib import infer_dtype
 
 from pandasdb.sql.record import Record
+import ibis
+
+from pandasdb.sql.utils import json
+from pandas.api.types import is_numeric_dtype
 
 
 class Stream:
 
-    def __init__(self, conn, query, length: int):
-        self.table_length: int = length
-        self.conn = conn
-        self.query = query
+    def __init__(self, table):
+        self.table = table
         self._stream: Optional[Iterator] = None
         self._transformations: List[Tuple[str, Callable]] = []
         self.aligners: List[ForwardAligner] = []
-        self._batch_size: int = max(2000, self.table_length // 10)
         self._last_iteration: Optional[datetime] = None
 
     def __iter__(self):
@@ -48,7 +50,7 @@ class Stream:
                             return next(self)
                 return record
         except TypeError as exp:
-            self._stream = iter(self.conn.stream(str(self.query), self._batch_size))
+            self._stream = iter(self.table)
             self._last_iteration = None
             return next(self)
 
@@ -59,15 +61,14 @@ class Stream:
         return self
 
     def df(self) -> pd.DataFrame:
-        self._batch_size = self.table_length
         return pd.DataFrame([dict(record) for record in self])
 
     @staticmethod
     def from_df(df):
         MockConnection = type("MockConnection", (), {
-            "stream": lambda s, b: [Record(**row) for row in df.to_dict(orient="records")]
+            "__iter__": lambda: iter([Record(**row) for row in df.to_dict(orient="records")])
         })
-        return Stream(MockConnection, "SELECT * FROM DATAFRAME", 100)
+        return Stream(MockConnection)
 
     def apply(self, func):
         self._transformations.append(("APPLY", func))
@@ -86,6 +87,21 @@ class Stream:
     def filter(self, func):
         self._transformations.append(("FILTER", func))
         return self
+
+    def end_stream(self):
+        from pandasdb.sql.table import Table
+        df = self.df()
+        for column in df.columns:
+            data = df[df[column].notna()][column].iloc[0]
+
+            if isinstance(data, list) or isinstance(data, dict):
+                df[column] = df[column].map(lambda data: json.dumps(data))
+            elif infer_dtype(df[column]) == "mixed-integer":
+                df[column] = df[column].map(str)
+
+        name = self.table.table_name if isinstance(self.table, Table) else "MOCK"
+        conn = self.table._connection if isinstance(self.table, Table) else None
+        return Table(name, ibis.pandas.connect({'df': df}).table("df"), conn)
 
 
 class ForwardAligner:

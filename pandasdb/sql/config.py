@@ -8,9 +8,12 @@ class Databases:
     _CONNECTION_PATH = os.path.expanduser(f"~{os.sep}.pandas_db{os.sep}connections.json")
     _CONFIG_PATH = os.path.expanduser(f"~{os.sep}.pandas_db{os.sep}config.json")
 
-    def __init__(self):
-        self.connections = self._ensure_file(Databases._CONNECTION_PATH)
-        self._conf = self._ensure_file(Databases._CONFIG_PATH)
+    def __init__(self, connections=None):
+        if not connections:
+            self.connections = self._ensure_file(Databases._CONNECTION_PATH)
+            # self._conf = self._ensure_file(Databases._CONFIG_PATH)
+        else:
+            self.connections = connections
         for database_name, connection_info in self.connections.items():
             setattr(self, database_name, partial(self._generate_connection, name=database_name, info=connection_info))
 

@@ -1,5 +1,6 @@
 import sqlparse
 from ibis.expr.api import ColumnExpr
+import pandas as pd
 
 
 class Column:
@@ -30,8 +31,18 @@ class Column:
             if not hasattr(self, func_name):
                 setattr(self, func_name, lambda: wrapper(func_name=func_name))
 
+    def alias(self, name):
+
+        return self._column.name(name)
+
     def head(self, n=5):
         return self._table[[self]].head(n)
+
+    def isin(self, arr):
+        return self._column.isin(arr)
+
+    def notint(self, arr):
+        return self._column.notin(arr)
 
     def df(self):
         return self._table[[self]].df()
@@ -82,16 +93,21 @@ class Column:
         return other <= self._column
 
     def __eq__(self, other):
-        return self._column == other
+        if isinstance(other, Column):
+            return self._column == other._column
+        elif pd.isna(other):
+            return self._column.isnull()
+        else:
+            return self._column == other
 
     def __req__(self, other):
-        return other == self._column
+        return other == self._column if not isinstance(other, Column) and not pd.isna(other) else self._column.isnull()
 
     def __ne__(self, other):
-        return self._column != other
+        return self._column != other if not isinstance(other, Column) and not pd.isna(other) else self._column.notnull()
 
     def __rne__(self, other):
-        return self._column != other
+        return self._column != other if not isinstance(other, Column) and not pd.isna(other) else self._column.notnull()
 
     def __ge__(self, other):
         return self._column >= other

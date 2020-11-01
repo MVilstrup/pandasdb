@@ -2,6 +2,7 @@ import inspect
 import re
 import uuid
 from copy import deepcopy
+from sqlite3 import DataError
 
 
 def snake_to_camel(word):
@@ -60,3 +61,32 @@ def maybe_copy(element):
 
 def ID():
     return uuid.uuid4().hex[:6].upper()
+
+
+def is_lambda(v):
+    LAMBDA = lambda: 0
+    return isinstance(v, type(LAMBDA)) and v.__name__ == LAMBDA.__name__
+
+
+def find_missing_values(database, missing_values):
+    from pandasdb import Async
+
+    jobs = []
+    columns = []
+    for table_name, table in database._tables.items():
+        for column in table.columns:
+            jobs.append(column.isin(missing_values).sum().execute)
+            columns.append(column)
+
+    def controlled_execution(job):
+        def wrapper():
+            try:
+                return job()
+            except:
+                pass
+
+        return wrapper
+
+    for i, result in enumerate(Async.handle(*map(controlled_execution, jobs))):
+        if result and result > 0:
+            yield columns[i], result

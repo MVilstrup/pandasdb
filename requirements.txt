@@ -1,4 +1,4 @@
-influxdb
+sqlalchemy
 pandas
 psycopg2
 pytest
@@ -7,3 +7,7 @@ sqlparse
 networkx
 pyvis
 numpy
+ibis
+matplotlib
+numpy
+seaborn
