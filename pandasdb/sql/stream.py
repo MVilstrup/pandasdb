@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import partial
 from typing import Optional, List, Tuple, Callable, Iterator
 
 import pandas as pd
@@ -74,6 +75,9 @@ class Stream:
         self._transformations.append(("APPLY", func))
         return self
 
+    def expand(self, column, depth=1):
+        return self.apply_if_possible(lambda record: record.expand(column, depth))
+
     def apply_if_possible(self, func):
         def wrapper(record):
             try:
@@ -84,24 +88,29 @@ class Stream:
         self._transformations.append(("APPLY", wrapper))
         return self
 
+    def apply_where(self, func, column_condition=None, value_condition=None):
+        def wrapper(record, func, column_cond, value_cond):
+            data = {}
+            for key, value in record:
+                if (column_cond and column_cond(key)) or (value_cond and value_cond(value)):
+                    data[key] = func(value)
+                else:
+                    data[key] = value
+
+            return Record(**data)
+
+        wrapped_func = partial(wrapper, func=func, column_cond=column_condition, value_cond=value_condition)
+        self._transformations.append(("APPLY", wrapped_func))
+        return self
+
     def filter(self, func):
         self._transformations.append(("FILTER", func))
         return self
 
-    def end_stream(self):
+    def end(self):
         from pandasdb.sql.table import Table
-        df = self.df()
-        for column in df.columns:
-            data = df[df[column].notna()][column].iloc[0]
+        return Table.from_df(self.df())
 
-            if isinstance(data, list) or isinstance(data, dict):
-                df[column] = df[column].map(lambda data: json.dumps(data))
-            elif infer_dtype(df[column]) == "mixed-integer":
-                df[column] = df[column].map(str)
-
-        name = self.table.table_name if isinstance(self.table, Table) else "MOCK"
-        conn = self.table._connection if isinstance(self.table, Table) else None
-        return Table(name, ibis.pandas.connect({'df': df}).table("df"), conn)
 
 
 class ForwardAligner:

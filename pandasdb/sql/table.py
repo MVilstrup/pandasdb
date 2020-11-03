@@ -6,6 +6,7 @@ from ibis.expr.api import TableExpr
 from pandas.api.types import infer_dtype
 from pandasdb.sql.column import Column
 import sqlparse
+import pandas as pd
 
 from pandasdb.sql.plot.graph import draw_graph
 from pandasdb.sql.record import Record
@@ -13,6 +14,8 @@ from pandasdb.sql.stream import Stream
 from pandasdb.sql.utils import AutoComplete, json
 from pandasdb.sql.utils.table_graph import recursive_copy
 import networkx as nx
+from pandas.io.json import build_table_schema
+from ibis import schema
 
 
 class Table:
@@ -46,6 +49,18 @@ class Table:
     def select(self, *args):
         return self[args]
 
+    def drop(self, *args):
+        to_select = []
+
+        for column in self.columns:
+            if not any([str(arg) == str(column) for arg in args]):
+                to_select.append(column)
+
+        return self.select(*to_select)
+
+
+
+
     @property
     def schema(self):
         return self._table.schema()
@@ -63,20 +78,34 @@ class Table:
 
         return Table(self.table_name, self._table.filter(predicts), self._connection)
 
-    def join(self, right, predicates, how="inner"):
-        if isinstance(predicates, FunctionType):
-            resulting_expr = predicates(self)
-            return Table(self.table_name, self._table.join(right._table.materialize(), resulting_expr, how).materialize(), self._connection)
+    def join_df(self, right, on, right_on=None, how="inner"):
+        if right_on is None:
+            right_on = on
 
-        return Table(self.table_name, self._table.join(right._table.materialize(), predicates, how).materialize(), self._connection)
+        left_df = self.df()
+        right_df = right.df()
 
-    def outer_join(self, right, predicates):
-        if isinstance(predicates, FunctionType):
-            resulting_expr = predicates(self)
-            return Table(self.table_name, self._table.outer_join(right._table.materialize(), resulting_expr).materialize(), self._connection)
+        full_df = pd.merge(left_df, right_df, left_on=on, right_on=right_on, how=how)
 
-        return Table(self.table_name, self._table.outer_join(right._table.materialize(), predicates).materialize(), self._connection)
+        return Table.from_df(full_df)
 
+    def left_join_df(self, right, on, right_on=None):
+        if right_on is None:
+            right_on = on
+
+        return self.join_df(right, on, right_on, how="left")
+
+    def inner_join_df(self, right, on, right_on=None):
+        if right_on is None:
+            right_on = on
+
+        return self.join_df(right, on, right_on, how="inner")
+
+    def right_join_df(self, right, on, right_on=None):
+        if right_on is None:
+            right_on = on
+
+        return self.join_df(right, on, right_on, how="right")
 
     def where(self, predicts):
         return self.filter(predicts)
@@ -126,18 +155,27 @@ class Table:
     @staticmethod
     def from_df(df):
         for column in df.columns:
-            if sum(df[column].notna()) > 0:
-                data = df[df[column].notna()][column].iloc[0]
-
-                if isinstance(data, list) or isinstance(data, dict):
-                    df[column] = df[column].map(lambda data: json.dumps(data))
-
             if infer_dtype(df[column]) == "mixed-integer":
                 df[column] = df[column].map(str)
 
+            col = df[df[column].notnull()].values
+            if len(col) > 0 and (isinstance(col[0], dict) or isinstance(col[0], list)):
+                df[column] = df[column].apply(lambda x: json.dumps(x) if x else x)
+
+        type_dict = {
+            "integer": "int64",
+            "number": "float",
+            "datetime": "timestamp"
+        }
+        names, types = [], []
+        for column in build_table_schema(df)["fields"]:
+            names.append(column["name"])
+            types.append(type_dict.get(column["type"], column["type"]))
+
+
         name = "MOCK"
         conn = None
-        return Table(name, ibis.pandas.connect({'df': df}).table("df"), conn)
+        return Table(name, ibis.pandas.connect({'df': df}).table("df", schema=schema(names=names, types=types)), conn)
 
     def __getitem__(self, item):
         if isinstance(item, list) or isinstance(item, tuple):

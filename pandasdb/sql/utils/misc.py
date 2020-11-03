@@ -1,8 +1,17 @@
 import inspect
-import re
 import uuid
 from copy import deepcopy
-from sqlite3 import DataError
+import re
+
+
+def standardize_key(name):
+    name = name.strip()
+    name = "".join([char if char.isalpha() else "_" for char in name])
+    name = re.sub('_+', '_', name)
+    name = re.sub('_+$', '', name)
+    name = re.sub('^_+', '', name)
+    name = name.lower()
+    return name
 
 
 def snake_to_camel(word):

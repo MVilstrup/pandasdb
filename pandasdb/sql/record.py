@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Optional, Callable
 from pandasdb.sql.utils import json, camel_to_snake
 import numpy as np
@@ -8,7 +9,9 @@ class Record:
         self._kwargs = {}
 
         for key, value in kwargs.items():
-            self.update(camel_to_snake(key), value)
+            key = camel_to_snake(key)
+            self.update(key, value)
+            setattr(self, f"set_{key}", partial(lambda value, column: self.update(column, value), column=key))
 
     def update(self, column: str, value):
         if callable(value):
@@ -16,6 +19,9 @@ class Record:
         setattr(self, column, value)
         self._kwargs[column] = value
         return self
+
+    def set(self, column, value):
+        return self.update(column, value)
 
     def update_where(self, value, column_cond: Optional[Callable] = None, value_cond: Optional[Callable] = None):
         for column, val in self._kwargs.items():
@@ -83,10 +89,13 @@ class Record:
     def __add__(self, other):
         if isinstance(other, dict):
             for key, value in other.items():
-                self.update(key, value)
+                return self.update(key, value)
         elif isinstance(other, Record):
             for key, value in other:
-                self.update(key, value)
+                return self.update(key, value)
+        elif isinstance(other, list) or isinstance(other, tuple):
+            assert len(other) == 2
+            return self.update(*other)
         else:
             raise ValueError("Record can only be added to dict or another record")
 

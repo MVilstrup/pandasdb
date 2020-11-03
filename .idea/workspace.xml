@@ -2,22 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1455bf10-c560-4a10-863c-0591258a1986" name="Default Changelist" comment="Implemented nested joins based on the shortest path among the edges of the table graph">
-      <change afterPath="$PROJECT_DIR$/pandasdb/sql/connection/delayed_connection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pandasdb/sql/connection/providers/pandas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/column.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/column.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/connection/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/connection/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/connection/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/connection/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/connection/multi_tunnel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pandasdb/sql/record.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/record.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/sql/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/stream.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/sql/table.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/sql/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/utils/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pandasdb/sql/utils/aync.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/utils/aync.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pandasdb/sql/utils/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/pandasdb/sql/utils/misc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
