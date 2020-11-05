@@ -2,16 +2,26 @@ from sshtunnel import SSHTunnelForwarder
 from threading import Lock
 import socket
 from contextlib import closing
-
+from urllib.parse import quote_plus as urlquote
+from sqlalchemy import event
 
 class DelayedConnection:
     lock = Lock()
 
-    def __init__(self, connection_func, host="", username="", password="", port=None, database="", tunnel=None,
+    def __init__(self, connection_func, provider, host="", username="", password="", port=None, database="",
+                 tunnel=None,
                  ssh_username=None, ssh_key=None):
+
+        if provider == "POSTGRES":
+            provider = "postgresql+psycopg2"
+        elif provider == "REDSHIFT":
+            provider = "postgresql+psycopg2" # @TODO change this to redshift as soon as the SSL certificate has been changed
+        else:
+            provider = provider.lower()
 
         self._kwargs = {
             "connection_func": connection_func,
+            "provider": provider,
             "host": host,
             "username": username,
             "password": password,
@@ -26,7 +36,7 @@ class DelayedConnection:
         self._forwarder = None
 
     @property
-    def next_port(self):
+    def free_port(self):
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
             s.bind(('', 0))
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -45,7 +55,7 @@ class DelayedConnection:
                                                ssh_private_key=self._kwargs["ssh_key"],
                                                ssh_username=self._kwargs["ssh_username"],
                                                remote_bind_address=(host, int(port)),
-                                               local_bind_address=("127.0.0.1", int(self.next_port)))
+                                               local_bind_address=("127.0.0.1", int(self.free_port)))
 
                 forwarder.daemon_forward_servers = True
                 forwarder.daemon_transport = True
@@ -54,13 +64,15 @@ class DelayedConnection:
                 host = "localhost"
                 port = forwarder.local_bind_port
 
-            conn = connection_func(user=self._kwargs["username"],
-                                   password=self._kwargs["password"],
-                                   host=host,
-                                   port=port,
-                                   database=self._kwargs["database"])
+            provider = self._kwargs["provider"]
+            username = urlquote(self._kwargs["username"])
+            password = urlquote(self._kwargs["password"])
+            database = self._kwargs["database"]
+            connection_string = f"{provider}://{username}:{password}@{host}:{port}/{database}"
+            conn = connection_func(url=connection_string)
 
         return forwarder, conn
+
 
     def _restart_connection(self):
         self._forwarder.stop()

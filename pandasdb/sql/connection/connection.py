@@ -35,6 +35,7 @@ class Connection:
         self._loaded = False
 
         self.conn = DelayedConnection(self._connection,
+                                      self.type,
                                       host=self._host,
                                       username=self._username,
                                       password=self._password,
