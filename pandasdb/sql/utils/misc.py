@@ -7,10 +7,11 @@ import re
 def standardize_key(name):
     name = name.strip()
     name = "".join([char if char.isalpha() else "_" for char in name])
+    name = camel_to_snake(name)
     name = re.sub('_+', '_', name)
     name = re.sub('_+$', '', name)
     name = re.sub('^_+', '', name)
-    name = name.lower()
+
     return name
 
 

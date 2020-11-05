@@ -11,12 +11,13 @@ class Record:
         for key, value in kwargs.items():
             key = camel_to_snake(key)
             self.update(key, value)
-            setattr(self, f"set_{key}", partial(lambda value, column: self.update(column, value), column=key))
+
 
     def update(self, column: str, value):
         if callable(value):
             value = value(self.get(column))
         setattr(self, column, value)
+        setattr(self, f"set_{column}", partial(lambda value, column: self.update(column, value), column=column))
         self._kwargs[column] = value
         return self
 

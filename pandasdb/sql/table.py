@@ -83,7 +83,10 @@ class Table:
             right_on = on
 
         left_df = self.df()
-        right_df = right.df()
+        if not isinstance(right, pd.DataFrame):
+            right_df = right.df()
+        else:
+            right_df = right_on
 
         full_df = pd.merge(left_df, right_df, left_on=on, right_on=right_on, how=how)
 

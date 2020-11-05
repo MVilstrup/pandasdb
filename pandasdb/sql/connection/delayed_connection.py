@@ -1,6 +1,7 @@
-from sqlalchemy.exc import OperationalError
 from sshtunnel import SSHTunnelForwarder
 from threading import Lock
+import socket
+from contextlib import closing
 
 
 class DelayedConnection:
@@ -24,31 +25,40 @@ class DelayedConnection:
         self._conn = None
         self._forwarder = None
 
+    @property
+    def next_port(self):
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.bind(('', 0))
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            return s.getsockname()[1]
+
     def _setup_connection(self):
         connection_func = self._kwargs["connection_func"]
         host = self._kwargs["host"]
         port = self._kwargs["port"]
         forwarder = None
 
-        # with DelayedConnection.lock:
-        if self._kwargs["tunnel"]:
-            tunnel_ip, tunnel_port = self._kwargs["tunnel"]
-            forwarder = SSHTunnelForwarder((tunnel_ip, int(tunnel_port)),
-                                           ssh_private_key=self._kwargs["ssh_key"],
-                                           ssh_username=self._kwargs["ssh_username"],
-                                           remote_bind_address=(host, int(port)))
-            forwarder.daemon_forward_servers = True
-            forwarder.daemon_transport = True
-            forwarder.start()
+        with DelayedConnection.lock:
+            if self._kwargs["tunnel"]:
+                tunnel_ip, tunnel_port = self._kwargs["tunnel"]
+                forwarder = SSHTunnelForwarder((tunnel_ip, int(tunnel_port)),
+                                               ssh_private_key=self._kwargs["ssh_key"],
+                                               ssh_username=self._kwargs["ssh_username"],
+                                               remote_bind_address=(host, int(port)),
+                                               local_bind_address=("127.0.0.1", int(self.next_port)))
 
-            host = "localhost"
-            port = forwarder.local_bind_port
+                forwarder.daemon_forward_servers = True
+                forwarder.daemon_transport = True
+                forwarder.start()
 
-        conn = connection_func(user=self._kwargs["username"],
-                               password=self._kwargs["password"],
-                               host=host,
-                               port=port,
-                               database=self._kwargs["database"])
+                host = "localhost"
+                port = forwarder.local_bind_port
+
+            conn = connection_func(user=self._kwargs["username"],
+                                   password=self._kwargs["password"],
+                                   host=host,
+                                   port=port,
+                                   database=self._kwargs["database"])
 
         return forwarder, conn
 
