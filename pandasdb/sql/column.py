@@ -31,6 +31,12 @@ class Column:
             if not hasattr(self, func_name):
                 setattr(self, func_name, lambda: wrapper(func_name=func_name))
 
+    def __getattr__(self, item):
+        try:
+            return self.__getattribute__(item)
+        except:
+            return getattr(self._column, item)
+
     def alias(self, name):
 
         return self._column.name(name)

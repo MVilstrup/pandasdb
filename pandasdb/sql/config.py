@@ -1,5 +1,5 @@
 import os
-import json
+from pandasdb.sql.utils import json
 from functools import partial
 from pandasdb.sql.connection import PostgreSQLConnection, MySQLConnection, SQLiteConnection
 

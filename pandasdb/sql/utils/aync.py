@@ -21,6 +21,9 @@ class Async:
 
     @staticmethod
     def handle(*jobs):
+        if len(jobs) == 1 and isinstance(jobs[0], list):
+            jobs = jobs[0]
+
         futures = [Async.execute(job) for job in jobs]
         return list(Async.wait_for(*futures))
 

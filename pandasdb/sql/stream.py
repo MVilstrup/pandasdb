@@ -3,13 +3,9 @@ from functools import partial
 from typing import Optional, List, Tuple, Callable, Iterator
 
 import pandas as pd
-from pandas._libs.lib import infer_dtype
 
+from pandasdb.sql.history import History
 from pandasdb.sql.record import Record
-import ibis
-
-from pandasdb.sql.utils import json
-from pandas.api.types import is_numeric_dtype
 
 
 class Stream:
@@ -111,6 +107,8 @@ class Stream:
         from pandasdb.sql.table import Table
         return Table.from_df(self.df())
 
+    def changes(self, on_column, freq="1d", as_table=False):
+        return History(self.df(), on_column=on_column, freq=freq, as_table=as_table)
 
 
 class ForwardAligner:

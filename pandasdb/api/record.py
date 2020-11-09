@@ -1,5 +1,6 @@
 from typing import Optional, Callable
-from pandasdb.sql.utils import json, camel_to_snake
+from pandasdb.sql.utils import camel_to_snake
+import json
 import numpy as np
 
 

@@ -5,6 +5,7 @@ from contextlib import closing
 from urllib.parse import quote_plus as urlquote
 from sqlalchemy import event
 
+
 class DelayedConnection:
     lock = Lock()
 
@@ -15,7 +16,7 @@ class DelayedConnection:
         if provider == "POSTGRES":
             provider = "postgresql+psycopg2"
         elif provider == "REDSHIFT":
-            provider = "postgresql+psycopg2" # @TODO change this to redshift as soon as the SSL certificate has been changed
+            provider = "postgresql+psycopg2"  # @TODO change this to redshift as soon as the SSL certificate has been changed
         else:
             provider = provider.lower()
 
@@ -73,7 +74,6 @@ class DelayedConnection:
 
         return forwarder, conn
 
-
     def _restart_connection(self):
         self._forwarder.stop()
         self.conn.close()
@@ -98,3 +98,7 @@ class DelayedConnection:
             return getattr(self.conn, name)
         except AttributeError:
             return self.__getattribute__(name)
+
+    def __del__(self):
+        if self._forwarder:
+            self._forwarder.stop()
