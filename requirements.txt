@@ -12,3 +12,4 @@ matplotlib
 numpy
 seaborn
 sqlalchemy-redshift
+pydot
