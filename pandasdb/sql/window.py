@@ -66,7 +66,7 @@ class Window:
                 df = time_index[start, end]
 
                 if len(df) > 0 or include_empty:
-                    data[name][column] = df
+                    data[name][column] = df.sort_values([column])
 
         return data
 
