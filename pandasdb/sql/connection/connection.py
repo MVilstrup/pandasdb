@@ -2,20 +2,20 @@ from functools import lru_cache
 
 import ibis
 
-from pandasdb.sql.connection.delayed_connection import DelayedConnection
+from pandasdb.sql.connection.connection_wrapper import ConnectionWrapper
 from pandasdb.sql.plot.graph import draw_graph
 from pandasdb.sql.table import Table
 from pandasdb.sql.utils.table_graph import generate_graph
-import pandas as pd
 
 ibis.options.interactive = True
 
 
 class Connection:
+    __connections__ = {}
 
     def __init__(self, connection_func, name="", host="", schema="public", username="", password="", port=-1,
                  database="", tunnel=None,
-                 ssh_username=None, ssh_key=None, type="", tables=None):
+                 ssh_username=None, ssh_key=None, type=""):
         from pandasdb import Async
 
         self.name = name
@@ -34,17 +34,6 @@ class Connection:
         self._ssh_key = ssh_key
         self._loaded = False
 
-        self.conn = DelayedConnection(self._connection,
-                                      self.type,
-                                      host=self._host,
-                                      username=self._username,
-                                      password=self._password,
-                                      port=self._port,
-                                      database=self._database,
-                                      tunnel=self._tunnel,
-                                      ssh_username=self._ssh_user_name,
-                                      ssh_key=self._ssh_key)
-
         # @no:format
         table_names = self.conn.list_tables(schema=self.schema)
         self._tables = {name: table for name, table in zip(table_names, Async.map_wait(self._create_table, table_names))}
@@ -52,6 +41,22 @@ class Connection:
 
         for name, table in self._tables.items():
             setattr(self, name, table)
+
+    @property
+    def conn(self):
+        conn_key = f"{self._host}_{self._username}_{self._password}_{self._port}_{self._database}_{self._tunnel}"
+        if conn_key not in self.__connections__:
+            self.__connections__[conn_key] = ConnectionWrapper(self._connection,
+                                                               self.type,
+                                                               host=self._host,
+                                                               username=self._username,
+                                                               password=self._password,
+                                                               port=self._port,
+                                                               database=self._database,
+                                                               tunnel=self._tunnel,
+                                                               ssh_username=self._ssh_user_name,
+                                                               ssh_key=self._ssh_key)
+        return self.__connections__[conn_key]
 
     @property
     def tables(self):

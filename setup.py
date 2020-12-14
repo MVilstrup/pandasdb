@@ -34,11 +34,11 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/raffle-ai/pandasdb',
+    url='',
 
     # Author details
     author='Mikkel Vilstrup',
-    author_email='mv@raffle.ai',
+    author_email='mikkel@undo.app',
 
     # Choose your license
     license='MIT',

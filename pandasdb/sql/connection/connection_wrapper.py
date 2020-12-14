@@ -1,13 +1,10 @@
 from sshtunnel import SSHTunnelForwarder
-from threading import Lock
 import socket
 from contextlib import closing
 from urllib.parse import quote_plus as urlquote
-from sqlalchemy import event
 
 
-class DelayedConnection:
-    lock = Lock()
+class ConnectionWrapper:
 
     def __init__(self, connection_func, provider, host="", username="", password="", port=None, database="",
                  tunnel=None,
@@ -49,28 +46,27 @@ class DelayedConnection:
         port = self._kwargs["port"]
         forwarder = None
 
-        with DelayedConnection.lock:
-            if self._kwargs["tunnel"]:
-                tunnel_ip, tunnel_port = self._kwargs["tunnel"]
-                forwarder = SSHTunnelForwarder((tunnel_ip, int(tunnel_port)),
-                                               ssh_private_key=self._kwargs["ssh_key"],
-                                               ssh_username=self._kwargs["ssh_username"],
-                                               remote_bind_address=(host, int(port)),
-                                               local_bind_address=("127.0.0.1", int(self.free_port)))
+        if self._kwargs["tunnel"]:
+            tunnel_ip, tunnel_port = self._kwargs["tunnel"]
+            forwarder = SSHTunnelForwarder((tunnel_ip, int(tunnel_port)),
+                                           ssh_private_key=self._kwargs["ssh_key"],
+                                           ssh_username=self._kwargs["ssh_username"],
+                                           remote_bind_address=(host, int(port)),
+                                           local_bind_address=("127.0.0.1", int(self.free_port)))
 
-                forwarder.daemon_forward_servers = True
-                forwarder.daemon_transport = True
-                forwarder.start()
+            forwarder.daemon_forward_servers = True
+            forwarder.daemon_transport = True
+            forwarder.start()
 
-                host = "localhost"
-                port = forwarder.local_bind_port
+            host = "localhost"
+            port = forwarder.local_bind_port
 
-            provider = self._kwargs["provider"]
-            username = urlquote(self._kwargs["username"])
-            password = urlquote(self._kwargs["password"])
-            database = self._kwargs["database"]
-            connection_string = f"{provider}://{username}:{password}@{host}:{port}/{database}"
-            conn = connection_func(url=connection_string)
+        provider = self._kwargs["provider"]
+        username = urlquote(self._kwargs["username"])
+        password = urlquote(self._kwargs["password"])
+        database = self._kwargs["database"]
+        connection_string = f"{provider}://{username}:{password}@{host}:{port}/{database}"
+        conn = connection_func(url=connection_string)
 
         return forwarder, conn
 
