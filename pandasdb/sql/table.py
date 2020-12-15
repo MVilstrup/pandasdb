@@ -19,7 +19,6 @@ from pandasdb.sql.utils.table_graph import recursive_copy
 import networkx as nx
 from pandas.io.json import build_table_schema
 from ibis import schema
-import multiprocessing as mp
 
 
 class Table:
