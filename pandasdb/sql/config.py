@@ -1,7 +1,7 @@
 import os
 from pandasdb.sql.utils import json
 from functools import partial
-from pandasdb.sql.connection import PostgreSQLConnection, MySQLConnection, SQLiteConnection
+from pandasdb.sql.connection import PostgreSQLConnection, MySQLConnection, SQLiteConnection, PandasConnection
 
 
 class Databases:
@@ -17,6 +17,8 @@ class Databases:
         for database_name, connection_info in self.connections.items():
             setattr(self, connection_info["schema"],
                     partial(self._generate_connection, name=database_name, info=connection_info))
+
+        #setattr("IN_MEMORY", PandasConnection(name="IN_MEMORY"))
 
     @staticmethod
     def _ensure_file(name):

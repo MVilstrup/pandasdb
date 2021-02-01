@@ -19,7 +19,7 @@ from pandasdb.sql.utils.table_graph import recursive_copy
 import networkx as nx
 from pandas.io.json import build_table_schema
 from ibis import schema
-
+from uuid import uuid4
 
 class Table:
 
@@ -88,7 +88,8 @@ class Table:
         if not isinstance(right, pd.DataFrame):
             right_df = Async.execute(right.df).result()
         else:
-            right_df = right_on
+            right_df = right
+
         left_df = left_df.result()
 
         full_df = pd.merge(left_df, right_df, left_on=on, right_on=right_on, how=how)
@@ -243,7 +244,7 @@ class Table:
             names.append(column["name"])
             types.append(type_dict.get(column["type"], column["type"]))
 
-        name = "MOCK"
+        name = f"MOCK-{uuid4()}"
         conn = None
         return Table(name, ibis.pandas.connect({'df': df}).table("df", schema=schema(names=names, types=types)), conn)
 
@@ -290,3 +291,9 @@ class Table:
 
     def _repr_html_(self):
         return self.head().to_html()
+
+    def __repr__(self):
+        if self._connection:
+            return f"{self._connection.schema}.{self.table_name}"
+        else:
+            return f"{self.table_name}"

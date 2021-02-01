@@ -62,6 +62,16 @@ class Connection:
     def tables(self):
         return list(self._tables.keys())
 
+    def refresh(self):
+        conn_key = f"{self._host}_{self._username}_{self._password}_{self._port}_{self._database}_{self._tunnel}"
+        if conn_key in self.__connections__:
+            self.__connections__.pop(conn_key)
+
+        return type(self)(name=self.name, host=self._host, schema=self.schema, username=self._username,
+                          password=self._password, port=self._port,
+                          database=self._database, tunnel=self._tunnel, ssh_username=self._ssh_user_name,
+                          ssh_key=self._ssh_key, type=self.type)
+
     def _create_table(self, name):
         return Table(name, self.conn.table(name, self._database, self.schema), self)
 

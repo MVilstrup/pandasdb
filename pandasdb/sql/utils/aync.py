@@ -1,9 +1,13 @@
+import concurrent
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 
 
-class Async:
+class Pool:
     pool = ThreadPoolExecutor(cpu_count())
+
+
+class Async(Pool):
 
     @staticmethod
     def execute(job, *args, **kwargs):
@@ -26,6 +30,38 @@ class Async:
 
         futures = [Async.execute(job) for job in jobs]
         return list(Async.wait_for(*futures))
+
+
+class AsyncTQDM(Pool):
+
+    @staticmethod
+    def execute(job, *args, **kwargs):
+        return AsyncTQDM.pool.submit(lambda f: f(*args, **kwargs), job)
+
+    @staticmethod
+    def wait_for(*jobs):
+        from tqdm.notebook import tqdm
+        job_ids = {job: i for i, job in enumerate(jobs)}
+        result_ids = {}
+
+        for job in tqdm(concurrent.futures.as_completed(job_ids), total=len(jobs)):
+            result_ids[job_ids[job]] = job.result()
+
+        for i in sorted(job_ids.values()):
+            yield result_ids[i]
+
+    @staticmethod
+    def map_wait(func, arg_list):
+        jobs = [AsyncTQDM.execute(func, arg) for arg in arg_list]
+        return AsyncTQDM.wait_for(*jobs)
+
+    @staticmethod
+    def handle(*jobs):
+        if len(jobs) == 1 and isinstance(jobs[0], list):
+            jobs = jobs[0]
+
+        futures = [AsyncTQDM.execute(job) for job in jobs]
+        return list(AsyncTQDM.wait_for(*futures))
 
 
 def as_async_map(func):
