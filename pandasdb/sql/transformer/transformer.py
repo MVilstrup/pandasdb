@@ -2,111 +2,156 @@ from collections import defaultdict
 import inspect
 import pandas as pd
 from functools import partial, lru_cache
-import numpy as np
-import networkx as nx
-
-
-def convert(**kwargs):
-    return kwargs
-
-
-class TransformDAG:
-    __root__ = "<ROOT>"
-
-    def __init__(self, inputs):
-        self.DAG = nx.DiGraph()
-        self.DAG.add_node(self.__root__, type="ROOT")
-
-        for input_column in inputs:
-            self.DAG.add_node(input_column, type="INPUT", dependencies=None)
-            self.DAG.add_edge(self.__root__, input_column)
-
-    def add(self, type, name, dependencies):
-        if name not in self.DAG.nodes:
-            self.DAG.add_node(name, type=type, dependencies=dependencies)
-        else:
-            self.DAG.nodes[name]["type"] = type
-            self.DAG.nodes[name]["dependencies"] = dependencies
-
-        if not dependencies:
-            self.DAG.add_edge(self.__root__, name)
-        else:
-            for dependency in dependencies:
-                self.DAG.add_edge(dependency, name)
-
-    def __iter__(self):
-        required_columns = set(self.DAG.nodes)
-
-        state = set()
-        for name in self.DAG.successors(self.__root__):
-            if name in required_columns and name != self.__root__:
-                state.add(name)
-
-                yield name, self.DAG.nodes[name].get("dependencies"), self.DAG.nodes[name]["type"]
-
-        missing_streams = [name for name in required_columns if name not in state and name != self.__root__]
-        while missing_streams:
-            for name in missing_streams:
-                dependencies = [dependency for dependency in self.DAG.predecessors(name) if dependency != self.__root__]
-                if all([dependency in state for dependency in dependencies]):
-                    state.add(name)
-                    yield name, self.DAG.nodes[name].get("dependencies"), self.DAG.nodes[name].get("type")
-
-            missing_streams = [node for node in self.DAG.nodes if node not in state and node != self.__root__]
+from pandasdb.sql.transformer.DAG import TransformDAG
+from pandasdb.sql.transformer.containers import Transformation, Parameter
+from pandasdb.sql.transformer.versioning import Identifier
 
 
 class Transformer:
-    __transforms__ = defaultdict(lambda: defaultdict(dict))
-    __aggregates__ = defaultdict(dict)
-    __calls__ = defaultdict(lambda: defaultdict(int))
-    __groups__ = defaultdict(dict)
-    __index__ = {}
+    __versions__ = defaultdict(Identifier)
 
-    def __new__(cls, df):
-        return cls.transform(df)
+    @classmethod
+    def version(cls):
+        return cls.__versions__[cls.__name__]
 
+    def __new__(cls, *args, **kwargs):
+        if cls.version().has_parameters:
+            cls._handle_parameters(kwargs)
+            return cls
+        elif not args:
+            return cls
+
+        df = args[0]
+
+        try:
+            df = df.df()
+        except AttributeError:
+            pass
+
+        with cls.version():
+            cls._replace_star_(df.columns)
+
+            # Set all parameters
+            for parameter in cls.version().parameters.values():
+                setattr(cls, parameter.identifier, parameter.value)
+
+            result = cls.transform(df)
+
+        return result
+
+    @classmethod
+    def _replace_star_(cls, columns):
+        star_transform = cls.version().columns.pop("*", None)
+        if star_transform:
+            for column_name in columns:
+                if not cls.version().is_included(column_name):
+                    column = Transformation(name=column_name,
+                                            inputs=[column_name],
+                                            function=star_transform.function,
+                                            kwargs=dict(is_copy=True))
+                    Transformer.__versions__[cls.__name__].update_columns(column)
+
+    @classmethod
+    def _handle_parameters(cls, kwargs):
+        for parameter_name, parameter in cls.version().parameters.items():
+            if parameter.filled:
+                continue
+
+            if parameter_name not in kwargs:
+                raise ValueError(f"{parameter_name} not provided. Hint: '{parameter.helper}'")
+
+            parameter.update(kwargs[parameter_name])
+
+    @classmethod
+    def parameters(cls):
+        all_params = cls.version().parameters.values()
+        return type("Params", (object,), {parameter.identifier: parameter.value for parameter in all_params})
+
+    @staticmethod
     def _notify_(function=None, transformer=None, column=None):
         if function is not None:
             if "self" in inspect.getfullargspec(function)[0]:
                 raise ValueError("columns can only be static functions")
 
-            transformer, column = function.__qualname__.split(".")
+            transformer, column = function.__qualname__.split(".")[-2:]
 
-        Transformer.__calls__[transformer][column] += 1
         return transformer, column
 
     @staticmethod
-    def _column(function=None, transformer_name=None, column_name=None, cache=None, arguments=None, temporary=None):
-        if function:
+    def _column(function=None, transformer_name=None, column_name=None, cache=None, arguments=None, **kwargs):
+        if transformer_name is not None and column_name is not None:
+            transformer_name, column_name = Transformer._notify_(transformer=transformer_name, column=column_name)
+        else:
             transformer_name, column_name = Transformer._notify_(function)
 
         function = function if not cache else lru_cache(function)
-        Transformer.__transforms__[transformer_name]["columns"][column_name] = (arguments, function, temporary)
+
+        column = Transformation(column_name, arguments, function, kwargs)
+        Transformer.__versions__[transformer_name].update_columns(column)
         return function
 
     @staticmethod
     def _aggregate(function, arguments, cache):
         transformer_name, column_name = Transformer._notify_(function)
         function = function if not cache else lru_cache(function)
-        Transformer.__aggregates__[transformer_name][column_name] = (arguments, function)
+
+        Transformer.__versions__[transformer_name].update_aggregations(Transformation(column_name, arguments, function))
         return function
 
     @staticmethod
-    def _group(transformer_name, columns, sort_by, is_split):
+    def _group(transformer_name, columns, sort_by, is_split, transforms=None):
         notify = lambda column: Transformer._notify_(transformer=transformer_name, column=column)[1]
         columns = list(map(notify, columns))
 
-        Transformer.__groups__[transformer_name]["split" if is_split else "group"] = (columns, sort_by)
+        transform = Transformation("SPLIT" if is_split else "GROUP",
+                                   columns,
+                                   None,
+                                   dict(sort_by=sort_by, transforms=transforms))
+
+        if is_split:
+            Transformer.__versions__[transformer_name].update_splits(transform)
+        else:
+            Transformer.__versions__[transformer_name].update_groups(transform)
+
+        for column in columns:
+            Transformer._column(transformer_name=transformer_name, column_name=column, arguments=[column])
+
+        Transformer._index(transformer_name=transformer_name, columns=columns)
+
+    @staticmethod
+    def _index(transformer_name, columns):
+        Transformer.__versions__[transformer_name].update_index(Transformation("INDEX", columns, None))
 
         for column in columns:
             Transformer._column(transformer_name=transformer_name, column_name=column, arguments=[column])
 
     @staticmethod
-    def _condition(function, location, cache):
+    def _condition(function, is_before, cache):
         transformer_name, condition_name = Transformer._notify_(function)
         arguments = inspect.getfullargspec(function)[0]
         function = function if not cache else lru_cache(function)
-        Transformer.__transforms__[transformer_name][location][condition_name] = (arguments, function)
+
+        condition = Transformation(condition_name, arguments, function)
+
+        if is_before:
+            Transformer.__versions__[transformer_name].update_pre_conditions(condition)
+        else:
+            Transformer.__versions__[transformer_name].update_post_conditions(condition)
+
+        return function
+
+    @staticmethod
+    def parameter(name, identifier=None, default_value=None, transform=None, helper=None):
+        transformer_name = inspect.stack()[1][0].f_locals["__qualname__"]
+
+        if identifier is None:
+            identifier = name
+
+        Transformer.__versions__[transformer_name].update_parameter(Parameter(name=name,
+                                                                              identifier=identifier,
+                                                                              default_value=default_value,
+                                                                              transform=transform,
+                                                                              helper=helper))
 
     @staticmethod
     def column(function=None, temporary=False, cache=False):
@@ -114,6 +159,7 @@ class Transformer:
             return partial(Transformer.column, temporary=temporary, cache=cache)
 
         arguments = inspect.getfullargspec(function)[0]
+
         return Transformer._column(function=function,
                                    cache=cache,
                                    arguments=arguments,
@@ -129,19 +175,33 @@ class Transformer:
                                      cache)
 
     @staticmethod
-    def copy(*columns, **renamed_columns):
+    def copy(*columns, with_function=None, **renamed_columns):
         transformer_name = inspect.stack()[1][0].f_locals["__qualname__"]
 
         for column in columns:
-            Transformer._column(transformer_name=transformer_name, column_name=column, arguments=[column])
+            Transformer._column(function=with_function, transformer_name=transformer_name, column_name=column,
+                                arguments=[column], is_copy=True)
 
         for column_name, input_column in renamed_columns.items():
-            Transformer._column(transformer_name=transformer_name, column_name=column_name, arguments=[input_column])
+            Transformer._column(function=with_function, transformer_name=transformer_name, column_name=column_name,
+                                arguments=[input_column], is_copy=True)
 
     @staticmethod
-    def group(*columns):
+    def group(*columns, **transforms):
+        modified_transforms = {}
+        for transform_name, function in transforms.items():
+            assert callable(function), "Only columns and transformations can be grouped on"
+            modified_transforms[transform_name] = Transformation(transform_name,
+                                                                 inspect.getfullargspec(function)[0],
+                                                                 function)
+
         transformer_name = inspect.stack()[1][0].f_locals["__qualname__"]
-        Transformer._group(transformer_name, list(columns), sort_by=None, is_split=False)
+        Transformer._group(transformer_name, list(columns), sort_by=None, is_split=False, transforms=transforms)
+
+    @staticmethod
+    def input(data):
+        transformer_name = inspect.stack()[1][0].f_locals["__qualname__"]
+        Transformer.__versions__[transformer_name].update_input(data)
 
     @staticmethod
     def split(columns, sort_by):
@@ -154,38 +214,21 @@ class Transformer:
     @staticmethod
     def index(*columns):
         transformer_name = inspect.stack()[1][0].f_locals["__qualname__"]
-        Transformer.__index__[transformer_name] = list(columns)
-
-        for column in columns:
-            Transformer._column(transformer_name=transformer_name, column_name=column, arguments=[column])
+        Transformer._index(transformer_name, list(columns))
 
     @staticmethod
     def pre_condition(function=None, cache=False):
         if function is None:
             return partial(Transformer.pre_condition, cache=cache)
 
-        return Transformer._condition(function, "pre_conditions", cache)
+        return Transformer._condition(function, is_before=True, cache=cache)
 
     @staticmethod
     def post_condition(function=None, cache=False):
         if function is None:
             return partial(Transformer.post_condition, cache=cache)
 
-        return Transformer._condition(function, "post_conditions", cache)
-
-    @classmethod
-    def __included__(cls, column):
-        latest_version = max(Transformer.__calls__[cls.__name__].values())
-        version = Transformer.__calls__[cls.__name__][column]
-
-        if version == latest_version:
-            return True
-        elif version == 1:
-            Transformer.__calls__[cls.__name__][column] = latest_version
-            return True
-        else:
-            Transformer.__calls__[cls.__name__].pop(column)
-            return False
+        return Transformer._condition(function, is_before=False, cache=cache)
 
     @classmethod
     def __prepare_data__(cls, columns, input_df, transformed_df, aggregates, views):
@@ -203,47 +246,56 @@ class Transformer:
         return sub_df
 
     @classmethod
-    def __apply__(cls, df, new_df, split):
+    def _dag_(cls, input_columns):
         """
         Calculate all transformations in the correct order
         """
-        transformations = TransformDAG(df.columns)
+        transformations = TransformDAG(input_columns)
 
         # Add all aggregates
-        for column_name, (input_columns, _) in cls.__aggregates__[cls.__name__].items():
-            if cls.__included__(column_name):
-                transformations.add("AGGREGATE", column_name, input_columns)
+        for column_name, input_columns in cls._aggregates_():
+            transformations.add("aggregates", column_name, input_columns)
 
         # Add all columns
-        for column_name, (input_columns, _, _) in Transformer.__transforms__[cls.__name__]["columns"].items():
-            if cls.__included__(column_name):
-                transformations.add("COLUMN", column_name, input_columns)
+        for column_name, input_columns in cls._columns_():
+            transformations.add("columns", column_name, input_columns)
 
+        return transformations
+
+    @classmethod
+    def __apply__(cls, df, new_df, split):
         aggregates = {}
         views = {}
 
-        for column, input_columns, col_type in transformations:
-            if col_type == "AGGREGATE":
+        for column, input_columns, col_type in cls._dag_(df.columns):
+            if col_type == "aggregates":
                 sub_df = cls.__prepare_data__(input_columns, df, new_df, aggregates, views)
-                function = cls.__aggregates__[cls.__name__][column][1]
-                aggregates[column] = function(**sub_df.to_dict(orient="series"))
-            elif col_type == "COLUMN":
-                sub_df = cls.__prepare_data__(input_columns, df, new_df, aggregates, views)
-                _, function, temporary = cls.__transforms__[cls.__name__]["columns"][column]
+                aggregate = cls.version().aggregations[column]
+                aggregates[column] = aggregate.function(**sub_df.to_dict(orient="series"))
+            elif col_type == "columns":
 
-                if function is not None:
-                    if not temporary:
-                        if not split:
-                            new_df[column] = sub_df.apply(lambda row: function(**row), axis=1)
-                        else:
-                            new_df[column] = function(**sub_df.to_dict(orient="series"))
+                sub_df = cls.__prepare_data__(input_columns, df, new_df, aggregates, views)
+                column_transform = cls.version().columns[column]
+
+                if column_transform.kwargs.get("is_copy") or column_transform.function is None:
+                    if column_transform.function is None:
+                        # just copy the column and move on
+                        new_df[column] = sub_df[input_columns[0]]
                     else:
-                        if not split:
-                            views[column] = sub_df.apply(lambda row: function(**row), axis=1)
+                        input_vals = sub_df[input_columns[0]]
+                        if split:
+                            new_df[column] = column_transform.function(input_vals)
                         else:
-                            views[column] = function(**sub_df.to_dict(orient="series"))
+                            new_df[column] = input_vals.apply(column_transform.function)
+
+                    continue
+
+                container = views if column_transform.kwargs.get("temporary") else new_df
+
+                if split:
+                    container[column] = column_transform.function(**sub_df.to_dict(orient="series"))
                 else:
-                    new_df[column] = sub_df[input_columns[0]]
+                    container[column] = sub_df.apply(lambda row: column_transform.function(**row), axis=1)
 
         if split:
             return new_df
@@ -251,41 +303,79 @@ class Transformer:
             return new_df, aggregates, views
 
     @classmethod
+    def _pre_conditions_(cls):
+        for (condition_name, condition) in cls.version().pre_conditions.items():
+            yield condition.name, condition.inputs, condition.function
+
+    @classmethod
+    def _post_conditions_(cls):
+        for (condition_name, condition) in cls.version().post_conditions.items():
+            yield condition.name, condition.inputs, condition.function
+
+    @classmethod
+    def _groups_(cls):
+        groups = cls.version().groups
+        if groups:
+            return groups.inputs
+
+    @classmethod
+    def _splits_(cls):
+        splits = cls.version().splits
+        if splits:
+            return splits.inputs, splits.kwargs["sort_by"]
+
+        return None, None
+
+    @classmethod
+    def _indexes_(cls):
+        return cls.version().index.inputs
+
+    @classmethod
+    def _aggregates_(cls):
+        for aggregate_name, aggregate in cls.version().aggregations.items():
+            yield aggregate.name, aggregate.inputs
+
+    @classmethod
+    def _columns_(cls):
+        for column_name, column in cls.version().columns.items():
+            yield column.name, column.inputs
+
+    @classmethod
     def transform(cls, df):
-        if not isinstance(df, pd.DataFrame):
-            df = df.df()
+
+        if not cls.version().has_columns:
+            for column in df.columns:
+                cls._column(transformer_name=cls.__name__, column_name=column, arguments=[column])
 
         new_df = pd.DataFrame({})
 
         """
         Apply all pre conditions
         """
-        condition_events = list(cls.__transforms__[cls.__name__]["pre_conditions"].items())
-        for (condition_name, (input_columns, function)) in condition_events:
-            if cls.__included__(condition_name):
-                df = df[df[input_columns].apply(lambda row: function(**row), axis=1)]
+        for condition_name, input_columns, function in cls._pre_conditions_():
+            df = df[df[input_columns].apply(lambda row: function(**row), axis=1)]
 
         """
         Group the data if needed
         """
-        if cls.__groups__.get(cls.__name__):
-            columns = list(cls.__groups__.get(cls.__name__))
-            df = df.groupby(columns).agg(list).reset_index()
+        if cls.version().has_groups:
+            group_colums = cls._groups_()
+            df = df.groupby(group_colums).agg(list).reset_index()
 
-            for column in columns:
+            for column in group_colums:
                 new_df[column] = df[column]
 
         """
         Alternatively split up the data in groups
         """
-        if cls.__splits__.get(cls.__name__):
-            columns, sort_by = list(cls.__splits__.get(cls.__name__))
-            print(columns, sort_by)
-            for _, gdf in df.sort_values(sort_by).groupby(columns):
-                curr_df = pd.DataFrame({column: gdf[column] for column in columns})
+
+        if cls.version().has_splits:
+            split_columns, sort_columns = cls._splits_()
+
+            for _, gdf in df.sort_values(sort_columns).groupby(split_columns):
+                curr_df = pd.DataFrame({column: gdf[column] for column in split_columns})
                 curr_df = cls.__apply__(gdf, curr_df, split=True)
                 new_df = pd.concat([new_df, curr_df], axis=0)
-
             aggregates = {}
             views = {}
         else:
@@ -294,81 +384,15 @@ class Transformer:
         """
         Apply all post conditions
         """
-        condition_events = list(cls.__transforms__[cls.__name__]["post_conditions"].items())
-        for condition_name, (input_columns, function) in condition_events:
-            if cls.__included__(condition_name):
-                sub_df = cls.__prepare_data__(input_columns, df, new_df, aggregates, views)
-                new_df = new_df[sub_df.apply(lambda row: function(**row), axis=1)]
+        for condition_name, input_columns, function in cls._post_conditions_():
+            sub_df = cls.__prepare_data__(input_columns, df, new_df, aggregates, views)
+            new_df = new_df[sub_df.apply(lambda row: function(**row), axis=1)]
 
         """
         Finally Index the dataframe
         """
-        if cls.__index__.get(cls.__name__):
-            columns = list(cls.__index__.get(cls.__name__))
-            new_df = new_df.set_index(columns).sort_index()
+        if cls.version().has_index:
+            index_columns = cls._indexes_()
+            new_df = new_df.set_index(index_columns).sort_index()
 
         return new_df
-
-
-class join:
-    def __init__(self, left=None, right=None, on=None, how=None, names=None):
-        self._left = left
-        self._right = right
-        self._on = on
-        self._how = how
-
-        if names is None:
-            self._suffixes = ["_left", "_right"]
-        else:
-            self._suffixes = names
-
-    def left(self, left):
-        self._left = left
-        return self
-
-    def right(self, right):
-        self._right = right
-        return self
-
-    def on(self, on):
-        self._on = on
-        return self
-
-    def how(self, how):
-        self._how = how
-        return self
-
-    def names(self, names):
-        self._suffixes = names
-        return self
-
-    def __getitem__(self, item):
-        return self()[item]
-
-    def __call__(self):
-        return pd.merge(self._left, self._right, on=self._on, how=self._how, suffixes=self._suffixes)
-
-
-class left_join(join):
-    def __init__(self, left=None, right=None, on=None, names=None):
-        join.__init__(self, left, right, on, how="left", names=names)
-
-
-class right_join(join):
-    def __init__(self, left=None, right=None, on=None, names=None):
-        join.__init__(self, left, right, on, how="right", names=names)
-
-
-class inner_join(join):
-    def __init__(self, left=None, right=None, on=None, names=None):
-        join.__init__(self, left, right, on, how="inner", names=names)
-
-
-column = Transformer.column
-post_condition = Transformer.post_condition
-pre_condition = Transformer.pre_condition
-copy = Transformer.copy
-group = Transformer.group
-split = Transformer.split
-index = Transformer.index
-aggregate = Transformer.aggregate

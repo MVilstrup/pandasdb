@@ -1,54 +1,34 @@
-from collections import defaultdict
-from copy import deepcopy
-
-class State:
-    def __init__(self):
-        self.transforms = defaultdict(dict)
-        self.groups = dict()
-        self.index = []
-        self.input = None
-
-    @property
-    def empty(self):
-        return not any([
-            bool(self.transforms),
-            bool(self.groups),
-            bool(self.index),
-            bool(self.input)
-        ])
-
-    def __eq__(self, other):
-        return all([
-            self.transforms == other.transforms,
-            self.groups == other.groups,
-            self.index == other.index,
-            self.input == other.input
-        ])
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def copy(self):
-        return deepcopy(self)
+from pandasdb.sql.transformer.containers import State
 
 
 class Identifier:
     def __init__(self):
         self.prev_state = State()
         self.current_state = State()
+        self.copied = False
 
     def __enter__(self):
         if self.current_state.empty or self.current_state == self.prev_state:
             self.current_state = self.prev_state.copy()
-
+            self.copied = True
 
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.current_state != self.prev_state:
+        if not self.copied:
             self.prev_state = self.current_state
+            self.copied = False
 
         self.current_state = State()
+
+    def is_included(self, column):
+        for column_name, transform in self.columns.items():
+            if column == column_name:
+                return True
+            if column in transform.inputs and transform.kwargs.get("is_copy", False):
+                return True
+
+        return False
 
     @property
     def columns(self):
@@ -68,7 +48,7 @@ class Identifier:
 
     @property
     def index(self):
-        return list(dict.fromkeys(self.current_state.index))
+        return self.current_state.index
 
     @property
     def input(self):
@@ -81,6 +61,10 @@ class Identifier:
     @property
     def post_conditions(self):
         return self.current_state.transforms.get("post_conditions", {})
+
+    @property
+    def parameters(self):
+        return self.current_state.parameters
 
     @property
     def has_columns(self):
@@ -114,17 +98,24 @@ class Identifier:
     def has_post_conditions(self):
         return bool(self.post_conditions)
 
-    def update_post_conditions(self, name, conditions):
-        self.current_state.transforms["post_conditions"][name] = conditions
+    @property
+    def has_parameters(self):
+        return any([not param.filled for param in self.parameters.values()])
 
-    def update_pre_conditions(self, name, conditions):
-        self.current_state.transforms["pre_conditions"][name] = conditions
+    def update_parameter(self, parameter):
+        self.current_state.parameters[parameter.name] = parameter
 
-    def update_columns(self, column, args):
-        self.current_state.transforms["columns"][column] = args
+    def update_post_conditions(self, condition):
+        self.current_state.transforms["post_conditions"][condition.name] = condition
 
-    def update_aggregations(self, column, args):
-        self.current_state.transforms["aggregations"][column] = args
+    def update_pre_conditions(self, condition):
+        self.current_state.transforms["pre_conditions"][condition.name] = condition
+
+    def update_columns(self, column):
+        self.current_state.transforms["columns"][column.name] = column
+
+    def update_aggregations(self, aggregation):
+        self.current_state.transforms["aggregations"][aggregation.name] = aggregation
 
     def update_splits(self, splits):
         self.current_state.groups["splits"] = splits
@@ -133,7 +124,10 @@ class Identifier:
         self.current_state.groups["groups"] = groups
 
     def update_index(self, index):
-        self.current_state.index += index
+        if self.has_index:
+            self.current_state.index.inputs = list(dict.fromkeys(self.current_state.index.inputs + index.inputs))
+        else:
+            self.current_state.index = index
 
     def update_input(self, input):
         self.current_state.input = input
