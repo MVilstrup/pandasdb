@@ -1,5 +1,5 @@
 import pandas as pd
-from pandasdb.sql.transformer import Combine
+from pandasdb.transformer import Combine
 
 
 class JoinFlow:
@@ -8,6 +8,9 @@ class JoinFlow:
 
     def apply(self, df):
         self._on_apply(df)
+
+    def __call__(self, df):
+        return self._on_apply(df)
 
 
 class _Join:
@@ -55,6 +58,7 @@ class _Join:
 
         return self._left_result.join(self._right_result, how=self._how)
 
+
 class Join:
     _base = lambda: _Join()
 
@@ -84,6 +88,7 @@ class _LeftJoin(_Join):
         Join.__init__(self)
         self._how = "left"
 
+
 class LeftJoin(Join):
     _base = lambda: _LeftJoin()
 
@@ -93,14 +98,16 @@ class _RightJoin(_Join):
         Join.__init__(self)
         self._how = "left"
 
+
 class RightJoin(Join):
     _base = lambda: _RightJoin()
+
 
 class _InnerJoin(_Join):
     def __init__(self):
         Join.__init__(self)
         self._how = "left"
 
+
 class InnerJoin(Join):
     _base = lambda: _InnerJoin()
-
