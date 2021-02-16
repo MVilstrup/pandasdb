@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from pandasdb.transformer.DAG import TransformDAG
 from pandasdb.transformer.data_containers import AggregationContainer, ColumnContainer
-from pandasdb.transformer.transforms.core import TransformationCore
+from pandasdb.transformer.transforms.core import TransformationCore, Union
 import pandas as pd
 from pandasdb.transformer.utils import to_df
 
@@ -12,11 +12,30 @@ class Transformer(TransformationCore):
     def __init__(self, **given_params):
         self._param_values = {}
         for parameter in self._parameters:
-            if parameter.name not in given_params:
-                raise ValueError(f"{parameter.name} is needed to compute. Reason: {parameter.helper}")
+            name, identifier, dtype = parameter.name, parameter.identifier, parameter.dtype
+            if name not in given_params:
+                if parameter.default_value is None:
+                    raise ValueError(f"{name} is needed to compute. Reason: {parameter.helper}")
+                else:
+                    parameter.update(parameter.default_value)
+                    self._param_values[identifier] = parameter.value
             else:
-                parameter.update(given_params[parameter.name])
-                self._param_values[parameter.identifier] = parameter.value
+                if dtype is not None:
+                    if not isinstance(given_params[name], dtype):
+                        raise ValueError(f"{name} has type {type(given_params[name])} but {dtype} was expected")
+
+                parameter.update(given_params[name])
+                self._param_values[identifier] = parameter.value
+
+    def __new__(cls, *args, **kwargs) -> Union[TransformationCore, pd.DataFrame]:
+        assert not (kwargs and args)
+
+        obj_ref = super(cls.__bases__[-1], cls).__new__(cls)
+        obj_ref.__init__(**kwargs)
+        if not args:
+            return obj_ref
+        else:
+            return obj_ref(*args, **kwargs)
 
     def _apply_pre_conditions(self, df: pd.DataFrame):
         for condition in self._pre_conditions:
@@ -37,6 +56,13 @@ class Transformer(TransformationCore):
             transformed_df = transformed_df[condition_result]
 
         return transformed_df
+
+    def _apply_split_conditions(self, split_df):
+        for condition in self._split_conditions:
+            condition_result = condition.transform(**split_df[condition.input_columns].to_dict(orient="series"))
+            split_df = split_df[condition_result]
+
+        return split_df
 
     @staticmethod
     def _align_tables(left, right, in_common, unique, names):
@@ -66,21 +92,53 @@ class Transformer(TransformationCore):
 
     @staticmethod
     def _apply_func(df, transformation, extra_params, is_split):
+        def prepare(kwargs):
+            if isinstance(kwargs, dict):
+                return {key: prepare(value) for key, value in kwargs.items()}
+            if isinstance(kwargs, list):
+                return pd.Series(kwargs)
+            if isinstance(kwargs, pd.Series):
+                return kwargs
+            if pd.isna(kwargs):
+                return None
+            return kwargs
+
         # @no:format
         if len(transformation.input_columns) == 1 and not extra_params:
             stream = df[transformation.input_columns[0]]
             if transformation.transform is None:
-                return stream
+                return prepare(stream)
             elif is_split:
                 return transformation.transform(stream)
             else:
                 return stream.apply(transformation.transform)
         else:
             if is_split:
-                return transformation.transform(**{k: pd.Series(v) for k, v in df.to_dict(orient="series").items()}, ** extra_params)
+                return transformation.transform(**df.to_dict(orient="series"), **extra_params)
             else:
                 return df.apply(lambda row: transformation.transform(**row, **extra_params), axis=1)
         # @do:format
+
+    def _generate_columns(self, transformed_df, result, is_split):
+        if is_split:
+            for column_name, data in result.items():
+                transformed_df[column_name] = data
+            return transformed_df
+        else:
+            columns = {}
+            for col_info in result:
+                for key in col_info.keys():
+                    if key not in columns:
+                        columns[key] = []
+
+            for row in result:
+                for column in columns.keys():
+                    columns[column].append(row.get(column, None))
+
+            for column, values in columns.items():
+                transformed_df[column] = values
+
+            return transformed_df
 
     def _apply_transform(self, transformed_df, input_df, is_split):
         aggregates, views = {}, {}
@@ -94,7 +152,11 @@ class Transformer(TransformationCore):
             elif isinstance(transformation, ColumnContainer):
                 reduced_df, extra_params = self._multi_source_extract(transformation.input_columns, transformed_df, input_df, aggregates, views)
 
-                if transformation.is_temporary:
+                if transformation.generates_columns:
+                    result = self._apply_func(reduced_df, transformation, extra_params, is_split)
+                    transformed_df = self._generate_columns(transformed_df, result, is_split)
+
+                elif transformation.is_temporary:
                     views[transformation.name] = self._apply_func(reduced_df, transformation, extra_params, is_split)
                 else:
                     transformed_df[transformation.name] = self._apply_func(reduced_df, transformation, extra_params, is_split)
@@ -192,8 +254,10 @@ class Transformer(TransformationCore):
             aggregates, views = defaultdict(list), defaultdict(list)
 
             for _, gdf in df.sort_values(self._splits.sort_by.columns).groupby(self._splits.group.columns):
+                gdf = self._apply_split_conditions(gdf)
+
                 curr_df = pd.DataFrame({column: gdf[column] for column in self._splits.sort_by.columns})
-                curr_df, curr_aggregates, curr_views = self._apply_transform(curr_df, df, is_split=True)
+                curr_df, curr_aggregates, curr_views = self._apply_transform(curr_df, gdf, is_split=True)
 
                 transformed_df = pd.concat([transformed_df, curr_df], axis=0)
                 for key, values in curr_aggregates.items():
@@ -219,24 +283,15 @@ class Transformer(TransformationCore):
         return transformed_df
 
     def __call__(self, *args, **kwargs) -> pd.DataFrame:
-        if self._many_to_many:
-            M2M = self._many_to_many
-            if kwargs:
-                if M2M.left not in kwargs:
-                    raise ValueError(f"{M2M.left} not provided")
-                if M2M.right not in kwargs:
-                    raise ValueError(f"{M2M.right} not provided")
-
-                left = kwargs[M2M.left]
-                right = kwargs[M2M.right]
-            else:
-                if not len(args) == 2:
-                    raise ValueError(f"{self.__class__.__name__} expects both {M2M.left} & {M2M.right}")
-                left, right = args
-
-            df = self._align_tables(to_df(left), to_df(right), M2M.in_common, M2M.unique, (M2M.left, M2M.right))
+        if hasattr(self, "initialize"):
+            df = to_df(type(self).initialize(*args, **kwargs))
         else:
             assert args and not kwargs, "Transformer only accepts a sigle DataFrame"
             df = to_df(args[0])
 
-        return self.transform(df)
+        transformed = self.transform(df)
+
+        if hasattr(self, "finalize"):
+            return type(self).finalize(transformed)
+        else:
+            return transformed

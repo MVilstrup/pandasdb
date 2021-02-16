@@ -1,7 +1,8 @@
+from collections import defaultdict
 from functools import wraps
-from threading import Lock
+from pprint import pprint
 
-initialization_lock = Lock()
+from pandasdb.transformer.transforms.core import TransformationCore
 
 
 def metaclass_creator(meta):
@@ -36,6 +37,35 @@ def assemble_transformer(transformer_cls, core_template, cls_attributes):
     return with_core(transformer_cls)
 
 
+def merge_templates(child, parent):
+    locations = [
+        "_columns_", "_aggregations_", "_pre_conditions_", "_post_conditions_",
+        "_split_conditions_", "_groups_", "_splits_", "_indexes_", "_parameters_"
+    ]
+    if not parent:
+        return child
+    elif not child:
+        return parent
+    else:
+        merged = parent
+        for location in locations:
+            for name, value in child[location].items():
+                merged[location][name] = value
+
+        return merged
+
+
+def recursive_merge(parent):
+    if issubclass(parent, TransformationCore) and hasattr(parent, "_core_"):
+        parent_core = parent._core_
+
+        if issubclass(parent, TransformationCore):
+            for grand_parent in parent.__bases__:
+                parent_core = merge_templates(parent_core, recursive_merge(grand_parent))
+
+        return parent_core
+
+
 def transformer(cls):
     from pandasdb.transformer.cache import TransformationCache
     from pandasdb.transformer.transforms.transformer import Transformer
@@ -43,7 +73,13 @@ def transformer(cls):
 
     transformer_name = to_transformer_name(cls.__name__)
 
-    transformer_template = TransformationCache.get_template(to_transformer_name(cls.__name__))
+    inherited_template = {}
+    for parent in cls.__bases__:
+        inherited_template = merge_templates(inherited_template, recursive_merge(parent))
+
+    new_template = TransformationCache.get_template(to_transformer_name(cls.__name__))
+
+    transformer_template = merge_templates(inherited_template, new_template)
 
     # Copy all functionality of the original class
     cls_attributes = {}
@@ -55,7 +91,4 @@ def transformer(cls):
 
     transformer_cls = assemble_transformer(CustomTransformer, transformer_template, cls_attributes)
 
-    if transformer_template["_parameters_"]:
-        return transformer_cls
-    else:
-        return transformer_cls()
+    return transformer_cls

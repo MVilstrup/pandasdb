@@ -24,12 +24,22 @@ class Async(Pool):
         return Async.wait_for(*jobs)
 
     @staticmethod
-    def handle(*jobs):
-        if len(jobs) == 1 and isinstance(jobs[0], list):
-            jobs = jobs[0]
+    def handle(*jobs, **named_jobs):
+        assert not (jobs and named_jobs)
+        if jobs:
+            names = []
+            if len(jobs) == 1 and isinstance(jobs[0], list):
+                jobs = jobs[0]
+        else:
+            names, jobs = zip(named_jobs.items())
 
         futures = [Async.execute(job) for job in jobs]
-        return list(Async.wait_for(*futures))
+        results = list(Async.wait_for(*futures))
+
+        if names:
+            return {name: result for name, result in zip(names, results)}
+        else:
+            return results
 
 
 class AsyncTQDM(Pool):
@@ -56,12 +66,22 @@ class AsyncTQDM(Pool):
         return AsyncTQDM.wait_for(*jobs)
 
     @staticmethod
-    def handle(*jobs):
-        if len(jobs) == 1 and isinstance(jobs[0], list):
-            jobs = jobs[0]
+    def handle(*jobs, **named_jobs):
+        assert not (jobs and named_jobs)
+        if jobs:
+            names = []
+            if len(jobs) == 1 and isinstance(jobs[0], list):
+                jobs = jobs[0]
+        else:
+            names, jobs = zip(*named_jobs.items())
 
         futures = [AsyncTQDM.execute(job) for job in jobs]
-        return list(AsyncTQDM.wait_for(*futures))
+        results = list(AsyncTQDM.wait_for(*futures))
+
+        if names:
+            return {name: result for name, result in zip(names, results)}
+        else:
+            return results
 
 
 def as_async_map(func):

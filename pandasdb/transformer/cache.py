@@ -6,25 +6,29 @@ class TransformationCache:
     _aggregations_ = defaultdict(dict)
     _pre_conditions_ = defaultdict(dict)
     _post_conditions_ = defaultdict(dict)
+    _split_conditions_ = defaultdict(dict)
     _groups_ = defaultdict(dict)
     _splits_ = defaultdict(dict)
     _indexes_ = defaultdict(dict)
     _parameters_ = defaultdict(dict)
-    _many_to_many_ = dict()
 
     @staticmethod
     def get_template(transformer_name):
         return {
-            "_columns_": list(TransformationCache._columns_.pop(transformer_name, {}).values()),
-            "_aggregations_": list(TransformationCache._aggregations_.pop(transformer_name, {}).values()),
-            "_pre_conditions_": list(TransformationCache._pre_conditions_.pop(transformer_name, {}).values()),
-            "_post_conditions_": list(TransformationCache._post_conditions_.pop(transformer_name, {}).values()),
-            "_groups_": list(TransformationCache._groups_.pop(transformer_name, {}).values()),
-            "_splits_": list(TransformationCache._splits_.pop(transformer_name, {}).values()),
-            "_indexes_": list(TransformationCache._indexes_.pop(transformer_name, {}).values()),
-            "_parameters_": list(TransformationCache._parameters_.pop(transformer_name, {}).values()),
-            "_many_to_many_": TransformationCache._many_to_many_.pop(transformer_name, None)
+            "_columns_": TransformationCache._columns_.pop(transformer_name, {}),
+            "_aggregations_": TransformationCache._aggregations_.pop(transformer_name, {}),
+            "_pre_conditions_": TransformationCache._pre_conditions_.pop(transformer_name, {}),
+            "_post_conditions_": TransformationCache._post_conditions_.pop(transformer_name, {}),
+            "_split_conditions_": TransformationCache._split_conditions_.pop(transformer_name, {}),
+            "_groups_": TransformationCache._groups_.pop(transformer_name, {}),
+            "_splits_": TransformationCache._splits_.pop(transformer_name, {}),
+            "_indexes_": TransformationCache._indexes_.pop(transformer_name, {}),
+            "_parameters_": TransformationCache._parameters_.pop(transformer_name, {}),
         }
+
+    @staticmethod
+    def has_index(transformer_name):
+        return bool(list(TransformationCache._indexes_.pop(transformer_name, {}).values()))
 
     @staticmethod
     def add_column(transformer_name, column_name, column, if_not_exists=False):
@@ -46,6 +50,10 @@ class TransformationCache:
         TransformationCache._post_conditions_[transformer_name][post_condition_name] = post_condition
 
     @staticmethod
+    def add_split_condition(transformer_name, split_condition_name, split_condition):
+        TransformationCache._split_conditions_[transformer_name][split_condition_name] = split_condition
+
+    @staticmethod
     def add_group(transformer_name, group_name, group):
         TransformationCache._groups_[transformer_name][group_name] = group
 
@@ -60,7 +68,3 @@ class TransformationCache:
     @staticmethod
     def add_parameter(transformer_name, parameter_name, parameter):
         TransformationCache._parameters_[transformer_name][parameter_name] = parameter
-
-    @staticmethod
-    def add_many_to_many(transformer_name, many_to_many):
-        TransformationCache._many_to_many_[transformer_name] = many_to_many

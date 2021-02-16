@@ -5,24 +5,28 @@ class TransformationCore:
 
     @property
     def _columns(self) -> List[ColumnContainer]:
-        return self._core_["_columns_"]
+        return list(self._core_["_columns_"].values())
 
     @property
     def _aggregations(self) -> List[AggregationContainer]:
-        return self._core_["_aggregations_"]
+        return list(self._core_["_aggregations_"].values())
 
     @property
     def _pre_conditions(self) -> List[ConditionContainer]:
-        return self._core_["_pre_conditions_"]
+        return list(self._core_["_pre_conditions_"].values())
 
     @property
     def _post_conditions(self) -> List[ConditionContainer]:
-        return self._core_["_post_conditions_"]
+        return list(self._core_["_post_conditions_"].values())
+
+    @property
+    def _split_conditions(self) -> List[ConditionContainer]:
+        return list(self._core_["_split_conditions_"].values())
 
     @property
     def _groups(self) -> GroupContainer:
         group_columns = []
-        for group in self._core_["_groups_"]:
+        for group in self._core_["_groups_"].values():
             group_columns += group.columns
 
         if group_columns:
@@ -31,7 +35,7 @@ class TransformationCore:
     @property
     def _splits(self) -> SplitContainer:
         split_columns, sort_columns = [], []
-        for split in self._core_["_splits_"]:
+        for split in self._core_["_splits_"].values():
             split_columns += split.group.columns
             sort_columns += split.sort_by.columns
 
@@ -41,15 +45,12 @@ class TransformationCore:
     @property
     def _indexes(self) -> IndexContainer:
         indexes = []
-        for index in self._core_["_indexes_"]:
+        for index in self._core_["_indexes_"].values():
             indexes += list(index.columns)
 
         return IndexContainer(list(dict.fromkeys(indexes)))
 
     @property
     def _parameters(self) -> List[ParameterContainer]:
-        return self._core_["_parameters_"]
+        return list(self._core_["_parameters_"].values())
 
-    @property
-    def _many_to_many(self) -> ManyToManyContainer:
-        return self._core_["_many_to_many_"]
