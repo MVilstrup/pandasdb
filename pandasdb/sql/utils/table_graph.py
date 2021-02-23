@@ -11,12 +11,15 @@ def generate_graph(tables):
         DiG.add_node(table.table_name)
 
     for from_table in tables.values():
+        possible_patterns = {column.name: re.compile(f".*{from_table.table_name}_{column.name}") for column in from_table.columns}
         for to_table in tables.values():
 
-            fk_pattern = re.compile(f".*{from_table.table_name}_id.*")
             for column in to_table.columns:
-                if fk_pattern.match(column.name):
-                    DiG.add_edge(to_table.table_name, from_table.table_name, **{"from": "id", "to": f"{column}"})
+                for from_column_name, pattern in possible_patterns.items():
+                    if pattern.match(column.name):
+                        DiG.add_edge(to_table.table_name,
+                                     from_table.table_name,
+                                     **{"from": from_column_name, "to": column.name})
 
     return DiG
 

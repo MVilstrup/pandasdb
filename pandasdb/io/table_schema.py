@@ -24,14 +24,16 @@ class TableSchema:
 
     def replace_with(self, df: pd.DataFrame):
         database = self.database()
-        self._table.schema = database.schema
+        self._table.schema = database.configuration.schema
         self._table.drop(database.engine(), checkfirst=True)
         self._table.create(database.engine())
 
         # Change all NaN values to None in to store it properly in the database
         df = df.astype(object).where(pd.notnull(df), None)
 
-        self.insert(database[list(self._columns.keys())], self.name, df)
+        selected_columns = df[list(self._columns.keys())]
+
+        self.insert(database, self.name, selected_columns)
 
 
     @staticmethod
@@ -47,7 +49,7 @@ class TableSchema:
             return f"INSERT INTO {schema}.{name}({cols}) VALUES " + values.decode('utf-8')
 
         chunker = partial(generate_chunk,
-                          schema=database.schema,
+                          schema=database.configuration.schema,
                           name=name,
                           columns=df.columns,
                           mogrify=database.engine().raw_connection().cursor().mogrify)
@@ -55,7 +57,7 @@ class TableSchema:
         value_tuples = [tuple(x) for x in df.to_numpy()]
 
         with database.connect() as connection:
-            connection = connection.execution_options(schema_translate_map={None: database.schema})
+            connection = connection.execution_options(schema_translate_map={None: database.configuration.schema})
 
             optimum_query_size = 8e+6
             orig_size = getsizeof(chunker(value_tuples))

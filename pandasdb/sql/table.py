@@ -294,6 +294,6 @@ class Table:
 
     def __repr__(self):
         if self._connection:
-            return f"{self._connection.schema}.{self.table_name}"
+            return f"{self.schema}.{self.table_name}"
         else:
             return f"{self.table_name}"

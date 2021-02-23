@@ -8,7 +8,8 @@ class Column:
         self._column = ibis_column
         self._table = table
 
-        self.name = f"{repr(self._table)}.{self._column.get_name()}"
+        self.full_name = f"{repr(self._table)}.{self._column.get_name()}"
+        self.name = self._column.get_name()
         self.dtype = self._column.type()
 
         # Add all the functions of the ibis function to the column
@@ -128,10 +129,10 @@ class Column:
         return other < self._column
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.full_name)
 
     def __str__(self):
-        return self.name
+        return self.full_name
 
     def _repr_html_(self):
         return self.head().to_html()
