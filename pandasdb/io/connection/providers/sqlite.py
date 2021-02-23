@@ -1,6 +1,6 @@
 import ibis
-from dbflow.configuration import Configuration
 
+from pandasdb.io.config.configuration import Configuration
 from pandasdb.io.connection.connection import Connection
 
 
