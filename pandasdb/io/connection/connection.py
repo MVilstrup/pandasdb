@@ -1,8 +1,8 @@
 from functools import lru_cache
 
 import ibis
-from dbflow.configuration import Configuration
 
+from pandasdb.io.config.configuration import Configuration
 from pandasdb.io.connection.connection_wrapper import ConnectionWrapper
 from pandasdb.sql.plot.graph import draw_graph
 from pandasdb.sql.table import Table
