@@ -66,7 +66,12 @@ class Connection:
         return type(self)(self.configuration)
 
     def _create_table(self, name):
-        return Table(name, self.conn.table(name, self.configuration.database, self.configuration.schema), self)
+        try:
+            return Table(name, self.conn.table(name, self.configuration.database, self.configuration.schema), self)
+        except:
+            import warnings
+            warnings.warn(f"Could not parse table: {self.configuration.database}.{self.configuration.schema}.{name}", ResourceWarning)
+            return None
 
     def graph(self, show=True, width=32, height=16, tables=None, save_to=None):
         graph = None
