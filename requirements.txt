@@ -1,3 +1,4 @@
+apache-airflow
 sqlalchemy
 pandas
 psycopg2
@@ -14,3 +15,4 @@ seaborn
 sqlalchemy-redshift
 pydot
 ujson
+tqdm

@@ -6,6 +6,8 @@ import pandas as pd
 from sqlalchemy import Table, MetaData, UniqueConstraint
 import numpy as np
 
+from pandasdb.transformer import clean_df
+
 
 class TableSchema:
     metadata = MetaData()
@@ -23,6 +25,7 @@ class TableSchema:
         self._table = Table(name, TableSchema.metadata, *columns, *constraints)
 
     def replace_with(self, df: pd.DataFrame):
+        df = clean_df(df)
         database = self.database()
         self._table.schema = database.configuration.schema
         self._table.drop(database.engine(), checkfirst=True)
