@@ -1,5 +1,4 @@
 import pandas as pd
-from tqdm.notebook import tqdm
 
 
 class FlexTable:
@@ -56,7 +55,7 @@ class FlexTable:
     @staticmethod
     def row_generator(df, column_name, function, column_inputs):
         rows = []
-        for row in tqdm(df.to_dict(orient="records")):
+        for row in df.to_dict(orient="records"):
             for result in function(**{column: row[column] for column in column_inputs}):
                 row_copy = row.copy()
                 row_copy[column_name] = result
