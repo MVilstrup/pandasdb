@@ -10,7 +10,6 @@ from pandasdb.transformer import clean_df
 
 
 class TableSchema:
-    metadata = MetaData()
 
     def __init__(self, database, name, *columns, unique_constraints={}):
         self.database = database
@@ -22,7 +21,7 @@ class TableSchema:
         for constrain_name, constraint_columns in unique_constraints.items():
             constraints.append(UniqueConstraint(*constraint_columns, name=f"{self.name}_{constrain_name}"))
 
-        self._table = Table(name, TableSchema.metadata, *columns, *constraints)
+        self._table = Table(name, MetaData(), *columns, *constraints)
 
     def replace_with(self, df: pd.DataFrame):
         df = clean_df(df)
