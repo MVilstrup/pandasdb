@@ -1,0 +1,3 @@
+
+class ColumnGenerationError(ValueError):
+    pass

@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from pandasdb.transformer.DAG import TransformDAG
 from pandasdb.transformer.data_containers import AggregationContainer, ColumnContainer
+from pandasdb.transformer.errors import ColumnGenerationError
 from pandasdb.transformer.transforms.core import TransformationCore, Union
 import pandas as pd
 from pandasdb.transformer.utils import to_df
@@ -150,7 +151,11 @@ class Transformer(TransformationCore):
                 aggregates[transformation.name] = transformation.transform(**reduced_df.to_dict(orient="series"), **extra_params)
 
             elif isinstance(transformation, ColumnContainer):
-                reduced_df, extra_params = self._multi_source_extract(transformation.input_columns, transformed_df, input_df, aggregates, views)
+                reduced_df, extra_params = None, None
+                try:
+                    reduced_df, extra_params = self._multi_source_extract(transformation.input_columns, transformed_df, input_df, aggregates, views)
+                except AssertionError as exp:
+                    raise ColumnGenerationError(f"Could not generate column: {transformation.name}. {exp}")
 
                 if transformation.generates_columns:
                     result = self._apply_func(reduced_df, transformation, extra_params, is_split)
@@ -175,7 +180,7 @@ class Transformer(TransformationCore):
             column_buckets.append(matching_column)
 
         left_over = target_columns - selected_columns
-        assert len(left_over) == 0, f"{left_over} could not be matched with the input data"
+        assert len(left_over) == 0, f"{list(left_over)} could not be matched with the input data"
 
         return column_buckets
 

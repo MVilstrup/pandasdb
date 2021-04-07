@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from pandasdb import Async
 from pandasdb.io import TableSchema
-from pandasdb.scheduling import subscribe_to, notify
+from pandasdb.scheduling import subscribe_to
 from datetime import datetime, timedelta
 
 
@@ -63,10 +63,7 @@ class DAGDefinition:
         compute = PythonOperator(task_id='etl_tasks', python_callable=lambda: self.local(write=True), dag=dag)
 
         if hasattr(self, "dependencies"):
-            subscribe_to(self.spec["dag_id"], self.dependencies) >> compute
-
-        if hasattr(self, "notify"):
-            compute >> notify(self.spec["dag_id"], self.notify)
+            subscribe_to(self.dependencies) >> compute
 
         globals()[self.spec["dag_id"]] = dag
         return globals()[self.spec["dag_id"]]

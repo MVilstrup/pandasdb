@@ -11,6 +11,12 @@ class ColumnContainer:
     is_copy: bool = field(default=False)
     generates_columns: bool = field(default=False)
 
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        return self.name == other.name and self.input_columns == other.input_columns
+
 
 @dataclass
 class AggregationContainer:
@@ -18,12 +24,24 @@ class AggregationContainer:
     input_columns: List[str]
     transform: callable
 
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        return self.name == other.name and self.input_columns == other.input_columns
+
 
 @dataclass
 class ConditionContainer:
     name: str
     input_columns: List[str]
     transform: callable
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        return self.name == other.name and self.input_columns == other.input_columns
 
 
 @dataclass

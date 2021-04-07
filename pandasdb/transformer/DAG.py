@@ -6,49 +6,44 @@ class TransformDAG:
 
     def __init__(self, initial_columns):
         self.DAG = nx.DiGraph()
-        self.DAG.add_node(self.__root__, type="ROOT")
+        self.leafs = set()
 
         for column in initial_columns:
-            self.DAG.add_node(column, type="INPUT", dependencies=None)
-            self.DAG.add_edge(self.__root__, column)
+            self.DAG.add_node(f"RAW--{column}", element=None)
+            self.DAG.add_edge(self.__root__, f"RAW--{column}")
 
     def add(self, transformation):
-        if transformation.name not in self.DAG.nodes:
-            self.DAG.add_node(transformation.name,
-                              type=type(transformation),
-                              dependencies=transformation.input_columns,
-                              element=transformation)
+        self.DAG.add_node(transformation.name, element=transformation)
+        self.leafs.add(transformation.name)
 
-        else:
-            self.DAG.nodes[transformation.name]["type"] = type(transformation)
-            self.DAG.nodes[transformation.name]["dependencies"] = transformation.input_columns
-            self.DAG.nodes[transformation.name]["element"] = transformation
+        columns = [dep if dep != transformation.name else f"RAW--{dep}" for dep in transformation.input_columns]
+        for dependency in columns:
+            if dependency not in self.DAG and f"RAW--{dependency}" in self.DAG:
+                dependency = f"RAW--{dependency}"
 
-        for dependency in transformation.input_columns:
             self.DAG.add_edge(dependency, transformation.name)
 
+        # Attach directly to root if no dependencies are present
+        if not columns:
+            self.DAG.add_edge(self.__root__, transformation.name)
+
     def __iter__(self):
-        required_columns = set([name for name in self.DAG.nodes if name])
+        stages = {}
+        for leaf in self.leafs:
+            try:
+                all_paths = nx.all_simple_paths(self.DAG, self.__root__, leaf)
+            except:
+                raise ValueError(f"Could not match dependencies for {leaf}")
 
-        state = set()
-        for name in self.DAG.successors(self.__root__):
-            if name in required_columns and name != self.__root__:
-                state.add(name)
+            for idx, path in enumerate(all_paths):
+                for job in path:
+                    if job != self.__root__ and self.DAG.nodes[job]["element"] is not None:
+                        element = self.DAG.nodes[job]["element"]
 
-                yield self.DAG.nodes[name].get("element")
+                        if element not in stages:
+                            stages[element] = idx
+                        else:
+                            stages[element] = min(idx, stages[element])
 
-        missing_streams = [name for name in required_columns if name not in state and name != self.__root__]
-        while missing_streams:
-            for name in missing_streams:
-                dependencies = [dependency for dependency in self.DAG.predecessors(name) if dependency != self.__root__]
-                if all([dependency in state for dependency in dependencies]):
-                    state.add(name)
-
-                    yield self.DAG.nodes[name].get("element")
-
-            new_missing_streams = [node for node in self.DAG.nodes if node not in state and node != self.__root__]
-
-            if set(new_missing_streams) == set(missing_streams):
-                raise ValueError(f"Cannot solve the dependencies for: {new_missing_streams}")
-            else:
-                missing_streams = new_missing_streams
+        for job, idx in sorted(stages.items(), key=lambda x: x[1]):
+            yield job
