@@ -38,7 +38,7 @@ setup(
 
     # Author details
     author='Mikkel Vilstrup',
-    author_email='mikkel@undo.app',
+    author_email='mikkel@vilstrup.dk',
 
     # Choose your license
     license='MIT',

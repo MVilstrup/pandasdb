@@ -185,9 +185,8 @@ class Transformer(TransformationCore):
         return column_buckets
 
     def _multi_source_extract(self, target_columns, transformed_df, input_df, aggregates, views):
-        available_columns = [transformed_df.columns, input_df.columns, aggregates.keys(),
-                             views.keys(), self._param_values.keys()]
-
+        available_columns = list(map(list, [transformed_df.columns, input_df.columns, aggregates.keys(),
+                                            views.keys(), self._param_values.keys()]))
         trans_cols, input_cols, agg_cols, view_cols, param_cols = self.divide(target_columns, available_columns)
 
         reduced_df = pd.concat([transformed_df[trans_cols], input_df[input_cols]], axis=1)
@@ -209,7 +208,7 @@ class Transformer(TransformationCore):
         """
         Calculate all transformations in the correct order
         """
-        transformations = TransformDAG(input_columns)
+        transformations = TransformDAG(list(input_columns) + list(self._param_values.keys()))
 
         all_columns = [column for column in self._columns if not column.name == "*"]
         if any([column.name == "*" for column in self._columns]) or not all_columns:
