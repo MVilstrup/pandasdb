@@ -1,4 +1,4 @@
-import pandasdb.sql.utils as utils
+import pandasdb.libraries.utils as utils
 
 
 def test_graph_generation(postgres_db):

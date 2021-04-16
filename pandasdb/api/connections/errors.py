@@ -1,3 +1,0 @@
-
-class KeywordNotImplementedError(Exception):
-    pass

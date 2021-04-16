@@ -2,7 +2,7 @@ from pandasdb import Table
 from pandasdb.connections import PostgresConnection
 
 import pytest
-from pandasdb.sql.utils import AutoComplete, string_to_python_attr
+from pandasdb.libraries.utils import AutoComplete, string_to_python_attr
 
 
 @pytest.fixture(scope="session", autouse=True)
