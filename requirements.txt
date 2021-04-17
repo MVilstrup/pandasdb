@@ -8,11 +8,10 @@ sqlparse
 networkx
 pyvis
 numpy
-ibis-framework
 matplotlib
 numpy
 seaborn
-sqlalchemy-redshift
+sqlalchemy-redshift==0.8.2
 pydot
 ujson
 tqdm

@@ -1,0 +1,2 @@
+class PandasDBException(Exception):
+    pass

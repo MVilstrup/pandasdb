@@ -66,7 +66,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='data science sql pandas analytics database postgres mysql sqlite influxdb',
+    keywords='data science sql pandas analytics databases postgres mysql sqlite influxdb',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

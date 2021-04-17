@@ -1,4 +1,19 @@
-import pandasdb.sql as sql
-from pandasdb.libraries.utils.aync import Async, as_async_map, AsyncTQDM
-from pandasdb.sql.window import Window
+import sys
+
+if sys.version_info[:2] >= (3, 8):
+    # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
+    from importlib.metadata import PackageNotFoundError, version  # pragma: no cover
+else:
+    from importlib_metadata import PackageNotFoundError, version  # pragma: no cover
+
+try:
+    # Change here if project is renamed and does not equal the package name
+    dist_name = __name__
+    __version__ = version(dist_name)
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "unknown"
+finally:
+    del version, PackageNotFoundError
+
 from pandasdb.src.databases import databases
+from pandasdb.libraries.parallel import Async, AsyncTQDM
