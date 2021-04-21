@@ -1,3 +1,4 @@
+gspread
 ipywidgets
 apache-airflow
 sqlalchemy
@@ -16,3 +17,5 @@ sqlalchemy-redshift==0.8.2
 pydot
 ujson
 tqdm
+google-auth
+google_auth_oauthlib

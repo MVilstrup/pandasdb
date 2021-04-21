@@ -1,6 +1,6 @@
 from functools import partial, lru_cache
 
-from pandasdb.communication.errors.io import PandasDBIOExeption
+from pandasdb.communication.errors.io import PandasDBIOError
 from pandasdb.communication.errors.validation import PandasDBDataValidationError
 from pandasdb.libraries.overrides.src.lazy import LazyLoader
 from pandasdb.libraries.overrides.src.representable import Representable
@@ -46,7 +46,7 @@ class Table(LazyLoader, Representable):
             self._primary_keys = primary_key.result(timeout)
             self._foreign_keys = foreign_keys.result(timeout)
         except TimeoutError:
-            raise PandasDBIOExeption(f"Attempt to search {self.name} timed out. This is most likely a connection issue")
+            raise PandasDBIOError(f"Attempt to search {self.name} timed out. This is most likely a connection issue")
         # @do:format
 
         for column in self._columns:

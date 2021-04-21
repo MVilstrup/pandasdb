@@ -10,7 +10,7 @@ type_mapper = {
 }
 
 
-def database_configurations():
+def database_settings():
     CONNECTION_PATH = os.path.expanduser(f"~{os.sep}.pandas_db{os.sep}connections.json")
 
     def is_valid():

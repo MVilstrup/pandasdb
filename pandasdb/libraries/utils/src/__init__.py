@@ -50,6 +50,14 @@ def string_to_python_attr(name):
     return camel_to_snake(name).replace(" ", "_").lower().replace('"', "")
 
 
+def name_to_attr(name):
+    name = re.sub(r'[^\w0-9]', '_', name).lower()
+    if name[0].isdigit():
+        name = f"a{name}"
+
+    return name
+
+
 def type_check(instance, TYPE):
     return isinstance(instance, TYPE) or issubclass(type(instance), TYPE) or instance == TYPE
 

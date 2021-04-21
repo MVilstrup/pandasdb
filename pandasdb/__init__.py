@@ -16,4 +16,5 @@ finally:
     del version, PackageNotFoundError
 
 from pandasdb.src.databases import databases
+from pandasdb.src.sheets import sheets
 from pandasdb.libraries.parallel import Async, AsyncTQDM

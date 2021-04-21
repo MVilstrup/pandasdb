@@ -1,5 +1,8 @@
 from pandasdb.communication.errors.base import PandasDBException
 
 
-class PandasDBIOExeption(PandasDBException):
+class PandasDBIOError(PandasDBException):
+    pass
+
+class PandasDBConfigurationError(PandasDBIOError):
     pass

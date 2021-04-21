@@ -1,1 +1,1 @@
-from pandasdb.services.settings.src.databases import database_configurations
+from pandasdb.services.settings.src.main import Settings

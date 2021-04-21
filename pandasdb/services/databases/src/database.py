@@ -1,4 +1,4 @@
-from pandasdb.communication.errors.io import PandasDBIOExeption
+from pandasdb.communication.errors.io import PandasDBIOError
 from pandasdb.libraries.configuration.src.database_config import DatabaseConfiguration
 from pandasdb.libraries.connections.alchemy import AlchemyConnection
 import pandas as pd
@@ -26,10 +26,10 @@ class Database(AlchemyConnection, LazyLoader, Representable):
                     setattr(self, schema, Schema(schema, database=self))
                     self.schemas.append(schema)
         except TimeoutError:
-            raise PandasDBIOExeption(f"Attempt to search database {self.name} timed out. This is most likely a connection or permission issue")
+            raise PandasDBIOError(f"Attempt to search database {self.name} timed out. This is most likely a connection or permission issue")
 
         if not self.schemas:
-            raise PandasDBIOExeption(f"Attempt to search database {self.name} failed to find any schemas. This is most likely a connection or permission issue")
+            raise PandasDBIOError(f"Attempt to search database {self.name} failed to find any schemas. This is most likely a connection or permission issue")
 
         # @do:format
 

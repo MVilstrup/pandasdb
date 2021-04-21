@@ -2,7 +2,7 @@ from functools import lru_cache
 
 import networkx as nx
 
-from pandasdb.communication.errors.io import PandasDBIOExeption
+from pandasdb.communication.errors.io import PandasDBIOError
 from pandasdb.libraries.overrides.src.lazy import LazyLoader
 from pandasdb.libraries.overrides.src.representable import Representable
 from pandasdb.services.databases.src.table import Table
@@ -36,10 +36,10 @@ class Schema(LazyLoader, Representable):
 
             self.tables = sorted(self.tables)
         except TimeoutError:
-            raise PandasDBIOExeption(f"Attempt to find tables in {self.name} timed out. This is most likely a connection or permission issue")
+            raise PandasDBIOError(f"Attempt to find tables in {self.name} timed out. This is most likely a connection or permission issue")
 
         if not self.tables:
-            raise PandasDBIOExeption(f"Could not find any tables in {self.name}. This is most likely a connection or permission issue")
+            raise PandasDBIOError(f"Could not find any tables in {self.name}. This is most likely a connection or permission issue")
         # @do:format
 
     @property
