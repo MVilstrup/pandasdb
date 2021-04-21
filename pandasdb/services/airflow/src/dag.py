@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from pandasdb.services.databases import Table
 
 
-class DAGDefinition:
+class ETLDAG:
     start_date: datetime = days_ago(2)
     catchup: bool = False
     default_args: dict = {
@@ -46,8 +46,9 @@ class DAGDefinition:
 
         tables = {name: table.df if hasattr(table, "df") else table for name, table in tables.items()}
 
-        jobs = {name: job for name, job in tables.items() if callable(job)}
-        tables.update(Async.handle(**jobs))
+        jobs = {name: job(asynchronous=True) for name, job in tables.items() if callable(job)}
+
+        tables.update({name: job.result() for name, job in jobs.items()})
 
         # Transform
         definition = self.transformation(**tables)

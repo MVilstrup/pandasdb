@@ -22,8 +22,8 @@ class Schema(LazyLoader, Representable):
 
     def __setup__(self, timeout=20):
         # @no:format
-        tables_future = self.database.inspect(lambda inspect: inspect.get_table_names(schema=self.name), asyncronous=True)
-        views_future = self.database.inspect(lambda inspect: inspect.get_view_names(schema=self.name), asyncronous=True)
+        tables_future = self.database.inspect(lambda inspect: inspect.get_table_names(schema=self.name), asynchronous=True)
+        views_future = self.database.inspect(lambda inspect: inspect.get_view_names(schema=self.name), asynchronous=True)
 
         try:
             for name in tables_future.result(timeout=timeout):

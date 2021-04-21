@@ -52,3 +52,9 @@ class TableBuilder:
         table._columns = self.columns
         table._dublication_endpoints = self.alt_schemas
         return table
+
+    def __getattr__(self, item):
+        try:
+            return self.__getattribute__(item)
+        except AttributeError:
+            raise AttributeError(f"'TableBuilder' object has no attribute '{item}'. You probably forgot to call '.build()'")

@@ -106,20 +106,26 @@ class Transformer(TransformationCore):
                 return None
             return kwargs
 
+        if transformation.name == "has_churned":
+            print(df.columns, transformation.input_columns)
+
         # @no:format
-        if len(transformation.input_columns) == 1 and not extra_params:
-            stream = df[transformation.input_columns[0]]
-            if transformation.transform is None:
-                return prepare(stream)
-            elif is_split:
-                return transformation.transform(stream)
+        try:
+            if len(transformation.input_columns) == 1 and not extra_params:
+                stream = df[transformation.input_columns[0]]
+                if transformation.transform is None:
+                    return prepare(stream)
+                elif is_split:
+                    return transformation.transform(stream)
+                else:
+                    return stream.apply(transformation.transform)
             else:
-                return stream.apply(transformation.transform)
-        else:
-            if is_split:
-                return transformation.transform(**df.to_dict(orient="series"), **extra_params)
-            else:
-                return df.apply(lambda row: transformation.transform(**row, **extra_params), axis=1)
+                if is_split:
+                    return transformation.transform(**df.to_dict(orient="series"), **extra_params)
+                else:
+                    return df.apply(lambda row: transformation.transform(**row, **extra_params), axis=1)
+        except Exception as exc:
+            raise ColumnGenerationError(f"Failed to generate column '{transformation.name}'. REASON: {exc}") from exc
         # @do:format
 
     def _generate_columns(self, transformed_df, result, is_split):
@@ -148,6 +154,8 @@ class Transformer(TransformationCore):
 
         # @no:format
         for transformation in self._execution_order(input_df.columns):
+
+
             if isinstance(transformation, AggregationContainer):
                 reduced_df, extra_params = self._multi_source_extract(transformation.input_columns, transformed_df, input_df, aggregates, views)
                 aggregates[transformation.name] = transformation.transform(**reduced_df.to_dict(orient="series"), **extra_params)
@@ -248,12 +256,14 @@ class Transformer(TransformationCore):
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty:
-            raise EmptyDataFrameError("PandasDB cannot transform and empty dataframe, please look at either your initialize funtion or the inputs to the transform")
+            raise EmptyDataFrameError(
+                "PandasDB cannot transform and empty dataframe.\nPlease look at either your initialize funtion or the inputs to the transform")
 
         """ Apply all pre conditions one at a time """
         df = self._apply_pre_conditions(df)
         if df.empty:
-            raise EmptyDataFrameError("The pre_conditions lead to an empty dataframe which cannot be handled by PandasDB, please change the pre_conditions or the inputs to the transform")
+            raise EmptyDataFrameError(
+                "The pre_conditions lead to an empty dataframe.\nPlease change the pre_conditions or the inputs to the transform")
 
         """ Group the data if needed """
         assert not (self._groups and self._splits), "Groups and Splits cannot be combined"

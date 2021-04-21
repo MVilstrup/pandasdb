@@ -27,7 +27,7 @@ class LazyLoader:
             self.__do_setup__()
 
         return self.__getattribute__(item)
-
+        
     def __dir__(self):
         try:
             self.__do_setup__()
@@ -35,3 +35,6 @@ class LazyLoader:
             pass
 
         return super().__dir__()
+
+    def __call__(self, timeout=60):
+        return self.refresh(timeout)

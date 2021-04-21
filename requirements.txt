@@ -1,3 +1,4 @@
+ipywidgets
 apache-airflow
 sqlalchemy
 pandas

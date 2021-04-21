@@ -1,1 +1,1 @@
-from pandasdb.services.airflow.src.dag import DAGDefinition
+from pandasdb.services.airflow.src.dag import ETLDAG

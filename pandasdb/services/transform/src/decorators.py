@@ -69,18 +69,18 @@ def column_generator(function):
                                                    generates_columns=True))
 
 
-def aggregate(function=None, cache=False):
-    if function is None:
-        return partial(aggregate, cache=cache)
-
-    transformer, column_name, input_columns = get_info(function)
-    function = function if not cache else lru_cache(function)
-
-    TransformationCache.add_aggregation(transformer, column_name,
-                                        AggregationContainer(name=column_name,
-                                                             input_columns=input_columns,
-                                                             transform=function))
-    return function
+# def aggregate(function=None, cache=False):
+#     if function is None:
+#         return partial(aggregate, cache=cache)
+#
+#     transformer, column_name, input_columns = get_info(function)
+#     function = function if not cache else lru_cache(function)
+#
+#     TransformationCache.add_aggregation(transformer, column_name,
+#                                         AggregationContainer(name=column_name,
+#                                                              input_columns=input_columns,
+#                                                              transform=function))
+#     return function
 
 
 def pre_condition(function=None, cache=False):

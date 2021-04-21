@@ -1,3 +1,5 @@
+from threading import Lock
+
 import sqlalchemy
 from concurrent.futures import ThreadPoolExecutor
 from pandasdb.libraries.configuration.src.base import BaseConfiguration
@@ -8,6 +10,7 @@ class AlchemyConnection:
 
     def __init__(self, configuration: BaseConfiguration):
         self.configuration = configuration
+        self._restart_lock = Lock()
         self._engine: sqlalchemy.engine.Engine = None
 
     def __initialize__(self):
@@ -18,6 +21,7 @@ class AlchemyConnection:
                                         pool_pre_ping=True,
                                         pool_use_lifo=True)
 
+    @property
     def valid(self):
         return all([self._engine is not None, self.configuration.valid])
 
@@ -29,22 +33,29 @@ class AlchemyConnection:
 
         self._engine = self.__initialize__()
 
-    def inspect(self, callback: callable, asyncronous=False, timeout=None):
+    def inspect(self, callback: callable, asynchronous=False, timeout=None):
         def inspector(connection):
             return callback(sqlalchemy.inspect(connection.engine))
 
-        return self.do(inspector, asyncronous, timeout)
+        return self.do(inspector, asynchronous, timeout)
 
-    def do(self, callback: callable, asyncronous=False, timeout=None):
-        def execute():
+    def do(self, callback: callable, asynchronous=False, timeout=None, max_attempts=3):
+        def execute(attempt=1):
             # Ensure it is possible to start a connection
-            if not self.valid():
-                self.__restart__()
+            with self._restart_lock:
+                if not self.valid:
+                    self.__restart__()
 
             with self._engine.begin() as connection:
-                return callback(connection)
+                try:
+                    return callback(connection)
+                except Exception as exc:
+                    if attempt <= max_attempts:
+                        return execute(attempt + 1)
+                    else:
+                        raise exc
 
-        if not asyncronous:
+        if not asynchronous:
             return self.__pool__.submit(execute).result(timeout=timeout)
         else:
             return self.__pool__.submit(execute)

@@ -6,7 +6,6 @@ from pandasdb.services.transform.src.decorators import (column,
                                                         pre_condition,
                                                         post_condition,
                                                         split_condition,
-                                                        aggregate,
 
                                                         Group,
                                                         Split,

@@ -12,3 +12,4 @@ class EmptyDataFrameError(PandasTransformError):
 
 class EmptyColumnError(PandasTransformError):
     pass
+
