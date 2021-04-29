@@ -10,6 +10,7 @@ class ColumnContainer:
     transform: callable
     is_copy: bool = field(default=False)
     generates_columns: bool = field(default=False)
+    vectorized: bool = field(default=False)
 
     def __hash__(self):
         return hash(self.name)
@@ -36,6 +37,7 @@ class ConditionContainer:
     name: str
     input_columns: List[str]
     transform: callable
+    vectorized: bool
 
     def __hash__(self):
         return hash(self.name)

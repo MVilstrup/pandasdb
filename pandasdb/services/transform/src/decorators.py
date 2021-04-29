@@ -24,7 +24,7 @@ def get_info(function):
 
 
 def include_column(transformer, column_name, input_columns=None, temporary=False, function=None, is_copy=False,
-                   if_not_exists=False):
+                   if_not_exists=False, vectorized=False):
     if input_columns is None:
         input_columns = [column_name]
 
@@ -33,7 +33,8 @@ def include_column(transformer, column_name, input_columns=None, temporary=False
                                                    input_columns=input_columns,
                                                    is_temporary=temporary,
                                                    transform=function,
-                                                   is_copy=is_copy),
+                                                   is_copy=is_copy,
+                                                   vectorized=vectorized),
                                    if_not_exists)
 
 
@@ -43,13 +44,13 @@ def include_all_columns(transformer, columns, function=None, is_copy=True, if_no
                        if_not_exists=if_not_exists)
 
 
-def column(function=None, temporary=False, cache=False):
+def column(function=None, temporary=False, cache=False, vectorized=False):
     if function is None:
-        return partial(column, temporary=temporary, cache=cache)
+        return partial(column, temporary=temporary, cache=cache, vectorized=vectorized)
 
     transformer, column_name, input_columns = get_info(function)
     function = function if not cache else lru_cache(function)
-    include_column(transformer, column_name, input_columns, temporary, function)
+    include_column(transformer, column_name, input_columns, temporary, function, vectorized=vectorized)
 
     return function
 
@@ -83,9 +84,9 @@ def column_generator(function):
 #     return function
 
 
-def pre_condition(function=None, cache=False):
+def pre_condition(function=None, cache=False, vectorized=False):
     if function is None:
-        return partial(pre_condition, cache=cache)
+        return partial(pre_condition, cache=cache, vectorized=vectorized)
 
     transformer, column_name, input_columns = get_info(function)
     function = function if not cache else lru_cache(function)
@@ -93,13 +94,14 @@ def pre_condition(function=None, cache=False):
     TransformationCache.add_pre_condition(transformer, column_name,
                                           ConditionContainer(name=column_name,
                                                              input_columns=input_columns,
-                                                             transform=function))
+                                                             transform=function,
+                                                             vectorized=vectorized))
     return function
 
 
-def post_condition(function=None, cache=False):
+def post_condition(function=None, cache=False, vectorized=False):
     if function is None:
-        return partial(post_condition, cache=cache)
+        return partial(post_condition, cache=cache, vectorized=vectorized)
 
     transformer, column_name, input_columns = get_info(function)
     function = function if not cache else lru_cache(function)
@@ -107,7 +109,8 @@ def post_condition(function=None, cache=False):
     TransformationCache.add_post_condition(transformer, column_name,
                                            ConditionContainer(name=column_name,
                                                               input_columns=input_columns,
-                                                              transform=function))
+                                                              transform=function,
+                                                              vectorized=vectorized))
     return function
 
 
@@ -121,17 +124,17 @@ def split_condition(function):
     return function
 
 
-def Split(columns, sort_by):
+def Split(columns, sort_by=None):
     if not isinstance(columns, (list, tuple)):
         columns = [columns]
-    if not isinstance(sort_by, (list, tuple)):
+    if sort_by is not None and not isinstance(sort_by, (list, tuple)):
         sort_by = [sort_by]
 
     class_name = inspect.stack()[1][0].f_locals["__qualname__"]
     transformer_name = to_transformer_name(class_name)
     TransformationCache.add_split(transformer_name, "SPLIT",
                                   SplitContainer(GroupContainer(columns), SortByContainer(sort_by)))
-    include_all_columns(transformer_name, list(columns) + list(sort_by), is_copy=True, if_not_exists=True)
+    include_all_columns(transformer_name, list(columns) + list(sort_by if sort_by is not None else []), is_copy=True, if_not_exists=True)
 
     if not TransformationCache.has_index(transformer_name):
         TransformationCache.add_index(transformer_name, "INDEX", IndexContainer(columns))
@@ -187,3 +190,13 @@ def Parameter(name, identifier=None, default_value=None, transform=None, helper=
                                                                                  transform=transform,
                                                                                  helper=helper,
                                                                                  dtype=dtype))
+
+
+def parameter(function):
+    transformer, param_name, _ = get_info(function)
+    TransformationCache.add_parameter(transformer, param_name, ParameterContainer(name=param_name,
+                                                                                  identifier=param_name,
+                                                                                  transform=function,
+                                                                                  dtype=None))
+
+    return function

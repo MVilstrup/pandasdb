@@ -50,7 +50,7 @@ class TransformationCore:
         split_columns, sort_columns = [], []
         for split in self._core_["_splits_"].values():
             split_columns += split.group.columns
-            sort_columns += split.sort_by.columns
+            sort_columns += split.sort_by.columns if split.sort_by.columns else []
 
         if split_columns:
             return SplitContainer(GroupContainer(split_columns), SortByContainer(sort_columns))

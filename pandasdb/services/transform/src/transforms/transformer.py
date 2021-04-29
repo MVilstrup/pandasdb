@@ -45,7 +45,10 @@ class Transformer(TransformationCore):
             input_cols, param_cols = self.divide(condition.input_columns, [df.columns, self._param_values.keys()])
             parmeters = {param: self._param_values[param] for param in param_cols}
 
-            condition_result = df[input_cols].apply(lambda row: condition.transform(**row, **parmeters), axis=1)
+            if condition.vectorized:
+                condition_result = condition.transform(**Transformer.prepare(df[input_cols]),  **parmeters)
+            else:
+                condition_result = df[input_cols].apply(lambda row: condition.transform(**row, **parmeters), axis=1)
 
             df = df[condition_result]
 
@@ -55,7 +58,12 @@ class Transformer(TransformationCore):
         for condition in self._post_conditions:
             target = condition.input_columns
             input_data, extra_params = self._multi_source_extract(target, transformed_df, df, aggregates, views)
-            condition_result = input_data.apply(lambda row: condition.transform(**row, **extra_params), axis=1)
+
+            if condition.vectorized:
+                condition_result = condition.transform(**Transformer.prepare(input_data),  **extra_params)
+            else:
+                condition_result = input_data.apply(lambda row: condition.transform(**row, **extra_params), axis=1)
+
             transformed_df = transformed_df[condition_result]
 
         return transformed_df
@@ -94,36 +102,42 @@ class Transformer(TransformationCore):
         return unique_rows.reset_index()
 
     @staticmethod
-    def _apply_func(df, transformation, extra_params, is_split):
-        def prepare(kwargs):
-            if isinstance(kwargs, dict):
-                return {key: prepare(value) for key, value in kwargs.items()}
-            if isinstance(kwargs, list):
-                return pd.Series(kwargs)
-            if isinstance(kwargs, pd.Series):
-                return kwargs
-            if pd.isna(kwargs):
-                return None
+    def prepare(kwargs):
+        if isinstance(kwargs, dict):
+            return {key: Transformer.prepare(value) for key, value in kwargs.items()}
+        if isinstance(kwargs, list):
+            return pd.Series(kwargs)
+        if isinstance(kwargs, pd.Series):
             return kwargs
+        if isinstance(kwargs, pd.DataFrame):
+            return {column: kwargs[column] for column in kwargs}
+        if pd.isna(kwargs):
+            return None
+        return kwargs
 
-        if transformation.name == "has_churned":
-            print(df.columns, transformation.input_columns)
-
+    @staticmethod
+    def _apply_func(df, transformation, extra_params, is_split):
         # @no:format
         try:
             if len(transformation.input_columns) == 1 and not extra_params:
                 stream = df[transformation.input_columns[0]]
                 if transformation.transform is None:
-                    return prepare(stream)
+                    return Transformer.prepare(stream)
                 elif is_split:
                     return transformation.transform(stream)
                 else:
-                    return stream.apply(transformation.transform)
+                    if transformation.vectorized:
+                        return transformation.transform(stream)
+                    else:
+                        return stream.apply(lambda row: transformation.transform(Transformer.prepare(row)))
             else:
                 if is_split:
-                    return transformation.transform(**df.to_dict(orient="series"), **extra_params)
+                    return transformation.transform(**Transformer.prepare(df.to_dict(orient="series")), **extra_params)
                 else:
-                    return df.apply(lambda row: transformation.transform(**row, **extra_params), axis=1)
+                    if transformation.vectorized:
+                        return transformation.transform(**Transformer.prepare(df), **extra_params)
+                    else:
+                        return df.apply(lambda row: transformation.transform(**Transformer.prepare(row.to_dict()), **extra_params), axis=1)
         except Exception as exc:
             raise ColumnGenerationError(f"Failed to generate column '{transformation.name}'. REASON: {exc}") from exc
         # @do:format
@@ -257,7 +271,7 @@ class Transformer(TransformationCore):
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty:
             raise EmptyDataFrameError(
-                "PandasDB cannot transform and empty dataframe.\nPlease look at either your initialize funtion or the inputs to the transform")
+                "PandasDB cannot transform an empty dataframe.\nPlease look at either your initialize funtion or the inputs to the transform")
 
         """ Apply all pre conditions one at a time """
         df = self._apply_pre_conditions(df)
@@ -276,7 +290,12 @@ class Transformer(TransformationCore):
         if self._splits:
             aggregates, views = defaultdict(list), defaultdict(list)
 
-            for _, gdf in df.sort_values(self._splits.sort_by.columns).groupby(self._splits.group.columns):
+            if self._splits.sort_by.columns:
+                _splitted  = df.sort_values(self._splits.sort_by.columns).groupby(self._splits.group.columns)
+            else:
+                _splitted = df.groupby(self._splits.group.columns)
+
+            for _, gdf in _splitted:
                 gdf = self._apply_split_conditions(gdf)
 
                 curr_df = pd.DataFrame({column: gdf[column] for column in self._splits.sort_by.columns})
