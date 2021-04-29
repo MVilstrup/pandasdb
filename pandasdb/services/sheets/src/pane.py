@@ -14,8 +14,8 @@ class Pane(LazyLoader, Representable):
     def df(self):
         return pd.DataFrame(self._pane.get_all_records())
 
-    def head(self):
-        return self.df().head()
+    def head(self, limit=5):
+        return self.df().head(limit)
 
     def __setup__(self, timeout=10):
         pass

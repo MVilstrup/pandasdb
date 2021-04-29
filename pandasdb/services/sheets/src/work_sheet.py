@@ -11,6 +11,7 @@ class WorkSheet(LazyLoader):
 
         self.name = name
         self._panes = {}
+        self._panes_order = []
 
         self._worksheet_callable = worksheet_callable
         self._worksheet = None
@@ -19,8 +20,13 @@ class WorkSheet(LazyLoader):
         self._worksheet = self._worksheet_callable()
 
         for pane in self._worksheet.worksheets():
-            setattr(self, name_to_attr(pane.title), Pane(pane.title, pane))
-            self._panes[name_to_attr(pane.title)] = pane.title
+            name = name_to_attr(pane.title)
+            setattr(self, name, Pane(pane.title, pane))
+            self._panes[name] = pane.title
+            self._panes_order.append(name)
 
-    def head(self):
-        return pd.DataFrame({"panes": self._panes.keys(), "actual_names": self._panes.values()})
+    def head(self, limit=5):
+        return getattr(self, self._panes_order[0]).head(limit)
+
+    def df(self):
+        return getattr(self, self._panes_order[0]).df()
