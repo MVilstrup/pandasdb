@@ -76,10 +76,11 @@ class TunnelledConfiguration(BaseConfiguration):
         return self.configuration.key(host, port)
 
     def restart(self):
-        if self.forwarder is None:
-            self.__initialize__()
-        else:
-            self.forwarder.restart()
+        if self.forwarder is not None:
+            print("Restarting running tunnel")
+            self.forwarder.stop()
+
+        self.__initialize__()
 
         return self
 

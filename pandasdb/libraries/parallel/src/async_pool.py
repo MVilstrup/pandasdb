@@ -1,7 +1,6 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
 
-
 class Pool:
     pool = ThreadPoolExecutor(50)
 
@@ -32,7 +31,6 @@ class Pool:
 
         return {name: result for name, result in zip(names, results)} if names else results
 
-
 class Async(Pool):
 
     @classmethod
@@ -52,33 +50,3 @@ class AsyncTQDM(Pool):
             result_ids[job_ids[job]] = job.result()
 
         return [result_ids[idx] for idx in sorted(job_ids.values())]
-
-
-def as_async_map(func):
-    from pandasdb.libraries.utils import iterable
-
-    class AsyncFunc:
-        def __init__(self, func):
-            self.func = func
-
-        def apply(self, args):
-            if not iterable(args):
-                self._error()
-
-            return Async.map_wait(func, args)
-
-        def map(self, args):
-            return self.apply(args)
-
-        def _error(self):
-            # @no:format
-            raise Exception(f"{self.func.__name__} has been converted to an async map function, and should be given a list of elements")
-            # @do:format
-
-        def __call__(self, *args, **kwargs):
-            if len(args) == 1 and iterable(args[0]):
-                return self.apply(args[0])
-
-            return self.apply(args)
-
-    return AsyncFunc(func)

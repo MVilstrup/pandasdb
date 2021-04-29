@@ -1,3 +1,4 @@
+import warnings
 from threading import Lock
 
 import sqlalchemy
@@ -23,7 +24,17 @@ class AlchemyConnection:
 
     @property
     def valid(self):
-        return all([self._engine is not None, self.configuration.valid])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+
+            if all([self._engine is not None, self.configuration.valid]):
+                try:
+                    self._engine.begin()
+                    return True
+                except:
+                    pass
+
+            return False
 
     def __restart__(self):
         self.configuration = self.configuration.restart()
@@ -41,15 +52,16 @@ class AlchemyConnection:
 
     def do(self, callback: callable, asynchronous=False, timeout=None, max_attempts=3):
         def execute(attempt=1):
-            # Ensure it is possible to start a connection
             with self._restart_lock:
                 if not self.valid:
                     self.__restart__()
 
-            with self._engine.begin() as connection:
+            # Ensure it is possible to start a connection
+            with self._engine.connect() as connection:
                 try:
                     return callback(connection)
                 except Exception as exc:
+                    print("Restarting query")
                     if attempt <= max_attempts:
                         return execute(attempt + 1)
                     else:
