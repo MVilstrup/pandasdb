@@ -113,14 +113,6 @@ class Table(LazyLoader, Representable):
 
         return df[self.columns]
 
-    def head(self, limit=5):
-        try:
-            df = self.df(limit)
-            return df if not isinstance(df, pd.Series) else df.to_frame()
-        except:
-            if self._columns:
-                return pd.DataFrame({col.name: [pd.NA] for col in self._columns})
-
     def replace(self, df: pd.DataFrame):
         def upload(connection, schema):
             self.__validate__(df).to_sql(self.name,
@@ -145,12 +137,23 @@ class Table(LazyLoader, Representable):
 
         return df
 
+    @lru_cache
+    def head(self, limit=5):
+        try:
+            df = self.df(limit)
+            return df if not isinstance(df, pd.Series) else df.to_frame()
+        except:
+            if self._columns:
+                return pd.DataFrame({col.name: [pd.NA] for col in self._columns})
+
+    def tail(self, limit=5):
+        return self.iloc[-limit:].head()
+
     def df(self, limit=None, asynchronous=False):
         def read(connection: Connection):
             df = pd.read_sql(self.sql, connection)
             df = self.__type_validation__(df)
             return df if len(df.columns) > 1 else df[df.columns[0]]
-
 
         if limit is not None:
             return self.copy(limit=limit).df(asynchronous=asynchronous)
@@ -176,7 +179,5 @@ class Table(LazyLoader, Representable):
         return self.copy(target)
 
     def __on_head_failure__(self):
-        # @no:format
-        new = "\n"
-        print(f"Could not load the data from {self.schema.database.name}.{self.schema.name}.{self.name}.{new}This is most likely a connection or permission issue.")
-        # @do:format
+        print(f"Could not load the data from {self.schema.database.name}.{self.schema.name}.{self.name}")
+        print("This is most likely a connection or permission issue.")

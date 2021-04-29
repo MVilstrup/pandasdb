@@ -19,3 +19,4 @@ ujson
 tqdm
 google-auth
 google_auth_oauthlib
+sphinx

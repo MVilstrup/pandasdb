@@ -11,6 +11,8 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
+from sphinx.setup_command import BuildDoc
+
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
@@ -21,13 +23,18 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
     requirements = f.readlines()
     requirements = list(map(lambda l: l.strip(), requirements))
 
+
+name = 'pandasdb'
+version = '0.1.2'
+release = version
+
 setup(
-    name='pandasdb',
+    name=name,
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across main.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version=version,
 
     description='A library for doing data analytics on databases in python without loading the data into memory of the' +
                 'client computer',
@@ -66,7 +73,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='data science sql pandas analytics databases postgres mysql sqlite influxdb',
+    keywords='data science sql pandas analytics databases',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -99,4 +106,16 @@ setup(
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     # data_files=[('my_data', ['data/data_file.txt'])],
+
+    cmdclass={
+        'build_sphinx': BuildDoc
+    },
+    # these are optional and override conf.py settings
+    command_options={
+        'build_sphinx': {
+            'project': ('setup.py', name),
+            'version': ('setup.py', version),
+            'release': ('setup.py', release),
+            'source_dir': ('setup.py', 'docs')}
+    },
 )

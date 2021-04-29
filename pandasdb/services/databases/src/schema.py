@@ -59,3 +59,25 @@ class Schema(LazyLoader, Representable):
     def __on_head_failure__(self):
         print(
             f"Failed to find any tables in {self.database.name}.{self.name} for user {self.database.configuration.username}. This is most likely a connection or permission issue.")
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            tables = [item]
+        elif isinstance(item, list):
+            tables = item
+        else:
+            raise KeyError(item)
+
+        for table_name in tables:
+            if not table_name in self.tables:
+                raise ValueError(f"{self.name} does not contain table {table_name}")
+
+        table_futures = []
+        for table_name in tables:
+            table_futures.append(getattr(self, table_name).df(asynchronous=True))
+
+        if len(table_futures) == 1:
+            return table_futures[0].result()
+        else:
+            return [f.result() for f in table_futures]
+
