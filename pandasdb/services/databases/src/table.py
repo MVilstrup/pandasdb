@@ -9,6 +9,9 @@ from sqlalchemy.engine import Connection
 import pandas as pd
 
 from pandasdb.libraries.pandas import convert_types
+from threading import Lock
+from pandas.io import sql
+
 
 
 class Table(LazyLoader, Representable):
@@ -31,6 +34,8 @@ class Table(LazyLoader, Representable):
 
         self._offset = None
         self._limit = None
+
+        self.upload_lock = Lock()
 
     def __setup__(self, timeout=10):
         # @no:format
@@ -115,13 +120,15 @@ class Table(LazyLoader, Representable):
 
     def replace(self, df: pd.DataFrame):
         def upload(connection, schema):
-            self.__validate__(df).to_sql(self.name,
-                                         connection,
-                                         schema=schema,
-                                         if_exists="replace",
-                                         index=False,
-                                         chunksize=10000,
-                                         method="multi")
+            with self.upload_lock:
+                sql.execute(f'DROP TABLE IF EXISTS {self.schema.name}.{self.name}', connection.engine)
+                self.__validate__(df).to_sql(self.name,
+                                             connection,
+                                             schema=schema,
+                                             if_exists="replace",
+                                             index=False,
+                                             chunksize=10000,
+                                             method="multi")
 
         jobs = [self.schema.database.do(partial(upload, schema=self.schema.name), asynchronous=True)]
 

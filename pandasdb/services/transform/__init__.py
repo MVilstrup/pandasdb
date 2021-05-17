@@ -12,3 +12,5 @@ from pandasdb.services.transform.src.decorators import (column,
                                                         Index,
                                                         Parameter,
                                                         Copy)
+
+import pandasdb.services.transform.src.join as join

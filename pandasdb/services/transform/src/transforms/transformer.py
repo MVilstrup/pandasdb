@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import Union
 
 import pandas as pd
+import numpy as np
 
 from pandasdb.communication.errors.transform import ColumnGenerationError, EmptyColumnError, EmptyDataFrameError
 from pandasdb.libraries.utils import to_df
@@ -189,7 +190,7 @@ class Transformer(TransformationCore):
                     views[transformation.name] = self._apply_func(reduced_df, transformation, extra_params, is_split)
                 else:
                     result = self._apply_func(reduced_df, transformation, extra_params, is_split)
-                    if len(result) == 0:
+                    if  isinstance(result, (np.ndarray, pd.DataFrame, pd.Series)) and len(result) == 0:
                         raise EmptyColumnError(f"Could not generate {transformation.name}, since its transformation returned an empty result ({result})")
                     transformed_df[transformation.name] = result
         # @do:format
@@ -273,8 +274,9 @@ class Transformer(TransformationCore):
             raise EmptyDataFrameError(
                 "PandasDB cannot transform an empty dataframe.\nPlease look at either your initialize funtion or the inputs to the transform")
 
-        """ Apply all pre conditions one at a time """
-        df = self._apply_pre_conditions(df)
+        """ Apply all pre conditions one at a time the dataframe is not grouped, else filter the groups"""
+        if not self._groups:
+            df = self._apply_pre_conditions(df)
         if df.empty:
             raise EmptyDataFrameError(
                 "The pre_conditions lead to an empty dataframe.\nPlease change the pre_conditions or the inputs to the transform")
@@ -282,6 +284,10 @@ class Transformer(TransformationCore):
         """ Group the data if needed """
         assert not (self._groups and self._splits), "Groups and Splits cannot be combined"
         if self._groups:
+            if self._pre_conditions:
+                groups = df.groupby(self._groups.columns)
+                df = groups.apply(lambda df: self._apply_pre_conditions(df).drop(columns=self._groups.columns))
+
             df = df.groupby(self._groups.columns).agg(list).reset_index()
 
         transformed_df = pd.DataFrame({})
@@ -295,17 +301,16 @@ class Transformer(TransformationCore):
             else:
                 _splitted = df.groupby(self._splits.group.columns)
 
+            split_transforms = []
             for _, gdf in _splitted:
                 gdf = self._apply_split_conditions(gdf)
 
                 curr_df = pd.DataFrame({column: gdf[column] for column in self._splits.sort_by.columns})
                 curr_df, curr_aggregates, curr_views = self._apply_transform(curr_df, gdf, is_split=True)
 
-                transformed_df = pd.concat([transformed_df, curr_df], axis=0)
-                for key, values in curr_aggregates.items():
-                    aggregates[key] += list(values)
-                for key, values in curr_views.items():
-                    aggregates[key] += list(values)
+                split_transforms.append(curr_df)
+
+            transformed_df = pd.concat([transformed_df, *split_transforms], axis=0)
 
         else:
             transformed_df, aggregates, views = self._apply_transform(transformed_df, df, is_split=False)

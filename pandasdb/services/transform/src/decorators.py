@@ -192,11 +192,16 @@ def Parameter(name, identifier=None, default_value=None, transform=None, helper=
                                                                                  dtype=dtype))
 
 
-def parameter(function):
-    transformer, param_name, _ = get_info(function)
-    TransformationCache.add_parameter(transformer, param_name, ParameterContainer(name=param_name,
+def parameter(function=None, helper=None, dtype=None, default_value=None):
+    if function is None:
+        return partial(parameter, helper=helper, dtype=dtype, default_value=default_value)
+
+    transformer, param_name, input_columns = get_info(function)
+    TransformationCache.add_parameter(transformer, param_name, ParameterContainer(name=input_columns[0],
                                                                                   identifier=param_name,
                                                                                   transform=function,
-                                                                                  dtype=None))
+                                                                                  dtype=dtype,
+                                                                                  helper=helper,
+                                                                                  default_value=default_value))
 
     return function
