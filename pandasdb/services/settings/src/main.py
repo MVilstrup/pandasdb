@@ -14,30 +14,46 @@ class Settings:
     @staticmethod
     def ensure_home_folder():
         if not os.path.exists(Settings.HOME):
-            os.mkdir(Settings.HOME)
+            try:
+                os.mkdir(Settings.HOME)
+                return True
+            except OSError:
+                return False
+        else:
+            return True
 
     @staticmethod
     def ensure_plugins_folder():
         Settings.ensure_home_folder()
         if not os.path.exists(Settings.PLUGINS):
-            os.mkdir(Settings.PLUGINS)
+            try:
+                os.mkdir(Settings.PLUGINS)
+                return True
+            except OSError:
+                return False
+        else:
+            return True
 
     @staticmethod
     def ensure_plugin(name):
-        Settings.ensure_plugins_folder()
-        PLUGIN = os.path.join(Settings.PLUGINS, name)
+        if Settings.ensure_plugins_folder():
+            PLUGIN = os.path.join(Settings.PLUGINS, name)
 
-        if not os.path.exists(PLUGIN):
-            os.mkdir(PLUGIN)
+            if not os.path.exists(PLUGIN):
+                try:
+                    os.mkdir(PLUGIN)
+                    return True
+                except OSError:
+                    return False
+            else:
+                return True
 
     @staticmethod
     def database_settings():
-        Settings.ensure_home_folder()
-        return database_settings()
+        if Settings.ensure_home_folder():
+            return database_settings()
 
     @staticmethod
     def sheets_settings():
-        Settings.ensure_plugins_folder()
-        Settings.ensure_plugin(Settings.GSUITE)
-
-        return sheets_settings()
+        if Settings.ensure_plugins_folder() and Settings.ensure_plugin(Settings.GSUITE):
+            return sheets_settings()

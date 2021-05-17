@@ -6,7 +6,10 @@ from pandasdb.services.sheets.src.google_sheets import GSheets
 
 def initiate_sheets():
     # Ensure google folder
-    return GSheets(GSuiteConnection(Settings.sheets_settings()["gsuite"]))
+
+    settings = Settings.sheets_settings()
+    if settings is not None:
+        return GSheets(GSuiteConnection(settings["gsuite"]))
 
 
 sheets = initiate_sheets()
