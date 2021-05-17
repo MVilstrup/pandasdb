@@ -1,6 +1,5 @@
 from pandasdb.libraries.overrides import LazyLoader
 from pandasdb.libraries.utils import name_to_attr
-import pandas as pd
 
 from pandasdb.services.sheets.src.pane import Pane
 
