@@ -130,13 +130,13 @@ class Table(LazyLoader, Representable):
                                              chunksize=10000,
                                              method="multi")
 
-        jobs = [self.schema.database.do(partial(upload, schema=self.schema.name), asynchronous=True)]
+        self.schema.database.do(partial(upload, schema=self.schema.name))
 
-        for schema in self._dublication_endpoints:
-            jobs.append(schema.database.do(partial(upload, schema=schema.name), asynchronous=True))
+        # for schema in self._dublication_endpoints:
+        #     jobs.append(schema.database.do(partial(upload, schema=schema.name), asynchronous=True))
 
-        for job in jobs:
-            job.result()
+        # for job in jobs:
+        #     job.result()
 
     def __type_validation__(self, df):
         for column_name, dtype in zip(df.columns, df.dtypes):
