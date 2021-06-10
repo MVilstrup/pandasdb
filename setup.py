@@ -25,11 +25,10 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 
 name = 'pandasdb'
-version = '0.1.23'
+version = '0.1.24'
 release = version
 
-setup(
-    name=name,
+setup(name=name,
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across main.py and the project code, see

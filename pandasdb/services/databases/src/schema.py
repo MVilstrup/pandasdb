@@ -45,7 +45,8 @@ class Schema(LazyLoader, Representable):
     @property
     @lru_cache
     def graph(self):
-        graph = self.database.inspect(lambda inspect: inspect.get_sorted_table_and_fkc_names(schema=self.name), timeout=20)
+        graph = self.database.inspect(lambda inspect: inspect.get_sorted_table_and_fkc_names(schema=self.name),
+                                      timeout=20)
         G = nx.DiGraph()
         return graph
 
@@ -81,3 +82,17 @@ class Schema(LazyLoader, Representable):
         else:
             return [f.result() for f in table_futures]
 
+
+class SchemaGroup:
+
+    def __init__(self, *schemas):
+        self.schemas = schemas
+
+    def Table(self, name: str) -> TableBuilder:
+        initial, others = self.schemas[0], self.schemas[1:]
+
+        builder = TableBuilder(initial, name)
+        for schema in others:
+            builder = builder.dublicate_endpoint(schema)
+
+        return builder

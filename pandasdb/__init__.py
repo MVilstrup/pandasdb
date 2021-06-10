@@ -1,5 +1,7 @@
 import sys
 
+
+
 if sys.version_info[:2] >= (3, 8):
     # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
     from importlib.metadata import PackageNotFoundError, version  # pragma: no cover
@@ -18,3 +20,4 @@ finally:
 from pandasdb.src.databases import databases
 from pandasdb.src.sheets import sheets
 from pandasdb.libraries.parallel import Async, AsyncTQDM
+from pandasdb.services.databases.src.schema import SchemaGroup

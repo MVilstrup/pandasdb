@@ -48,9 +48,8 @@ class TableBuilder:
 
     def build(self):
         from pandasdb.services.databases.src.table import Table
-        table = Table(self.name, schema=self.schema, is_view=False)
+        table = Table(self.name, schema=self.schema, is_view=False, alt_schemas=self.alt_schemas)
         table._columns = self.columns
-        table._dublication_endpoints = self.alt_schemas
         return table
 
     def __getattr__(self, item):

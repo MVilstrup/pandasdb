@@ -82,9 +82,11 @@ def transformer(cls):
 
     # Copy all functionality of the original class
     cls_attributes = {}
-    for attr_name, attr in vars(cls).items():
-        if not attr_name.startswith("_") and not attr_name.endswith("_"):
-            cls_attributes[attr_name] = attr
+
+    for _cls in [cls, *cls.__bases__]:
+        for attr_name, attr in vars(_cls).items():
+            if not attr_name.startswith("_") and not attr_name.endswith("_"):
+                cls_attributes[attr_name] = attr
 
     CustomTransformer = type(transformer_name, (Transformer,), {})
 

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from functools import partial, lru_cache
 
 from pandasdb.communication.errors.io import PandasDBIOError
@@ -13,10 +14,9 @@ from threading import Lock
 from pandas.io import sql
 
 
-
 class Table(LazyLoader, Representable):
 
-    def __init__(self, name, schema, is_view, should_setup=True, selected=None):
+    def __init__(self, name, schema, is_view, should_setup=True, selected=None, alt_schemas=None, columns=None):
         LazyLoader.__init__(self, should_setup)
         Representable.__init__(self)
 
@@ -24,18 +24,19 @@ class Table(LazyLoader, Representable):
         self.schema = schema
         self.is_view = is_view
 
-        self._columns = None
+        self._columns = columns
         self._indexes = None
         self._primary_keys = None
         self._foreign_keys = None
 
         self._selected_columns = selected
-        self._dublication_endpoints = []
+
+        self.alt_schemas = alt_schemas
 
         self._offset = None
         self._limit = None
 
-        self.upload_lock = Lock()
+        self.upload_lock = defaultdict(Lock)
 
     def __setup__(self, timeout=10):
         # @no:format
@@ -119,24 +120,28 @@ class Table(LazyLoader, Representable):
         return df[self.columns]
 
     def replace(self, df: pd.DataFrame):
-        def upload(connection, schema):
-            with self.upload_lock:
-                sql.execute(f'DROP TABLE IF EXISTS {self.schema.name}.{self.name}', connection.engine)
-                self.__validate__(df).to_sql(self.name,
-                                             connection,
-                                             schema=schema,
-                                             if_exists="replace",
-                                             index=False,
-                                             chunksize=10000,
-                                             method="multi")
+        def upload(connection, data, schema, name):
+            with self.upload_lock[schema]:
+                sql.execute(f'DROP TABLE IF EXISTS {schema}.{name}', connection.engine)
+                self.__validate__(data).to_sql(name,
+                                               connection,
+                                               schema=schema,
+                                               if_exists="replace",
+                                               index=False,
+                                               chunksize=10000,
+                                               method="multi")
 
-        self.schema.database.do(partial(upload, schema=self.schema.name))
+        if not self.alt_schemas:
+            upload_data = partial(upload, data=df, schema=self.schema.name, name=self.name)
+            self.schema.database.do(upload_data)
+        else:
+            jobs = []
+            for schema in [self.schema] + self.alt_schemas:
+                upload_data = partial(upload, data=df, schema=self.schema.name, name=self.name)
+                jobs.append(schema.database.do(upload_data, asynchronous=True))
 
-        # for schema in self._dublication_endpoints:
-        #     jobs.append(schema.database.do(partial(upload, schema=schema.name), asynchronous=True))
-
-        # for job in jobs:
-        #     job.result()
+            for job in jobs:
+                job.result()
 
     def __type_validation__(self, df):
         for column_name, dtype in zip(df.columns, df.dtypes):
