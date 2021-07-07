@@ -50,6 +50,29 @@ class AlchemyConnection:
 
         return self.do(inspector, asynchronous, timeout)
 
+    def batch(self,  callback: callable, asynchronous=False, timeout=None, max_attempts=3):
+        def execute(attempt=1):
+            with self._restart_lock:
+                if not self.valid:
+                    self.__restart__()
+
+            # Ensure it is possible to start a connection
+            with self._engine.connect() as connection:
+                try:
+                    for batch in callback(connection):
+                        yield batch
+                except Exception as exc:
+                    print("Restarting query")
+                    if attempt <= max_attempts:
+                        return execute(attempt + 1)
+                    else:
+                        raise exc
+
+        if not asynchronous:
+            return self.__pool__.submit(execute).result(timeout=timeout)
+        else:
+            return self.__pool__.submit(execute)
+
     def do(self, callback: callable, asynchronous=False, timeout=None, max_attempts=3):
         def execute(attempt=1):
             with self._restart_lock:

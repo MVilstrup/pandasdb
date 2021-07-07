@@ -137,7 +137,7 @@ class Table(LazyLoader, Representable):
         else:
             jobs = []
             for schema in [self.schema] + self.alt_schemas:
-                upload_data = partial(upload, data=df, schema=self.schema.name, name=self.name)
+                upload_data = partial(upload, data=df, schema=schema.name, name=self.name)
                 jobs.append(schema.database.do(upload_data, asynchronous=True))
 
             for job in jobs:
@@ -159,18 +159,26 @@ class Table(LazyLoader, Representable):
                 return pd.DataFrame({col.name: [pd.NA] for col in self._columns})
 
     def tail(self, limit=5):
-        return self.iloc[-limit:].head()
+        return self.iloc[-limit:]
 
-    def df(self, limit=None, asynchronous=False):
+    def df(self, limit=None, asynchronous=False, batch_size=None):
+        def batch_read(connection: Connection):
+            for df in pd.read_sql(self.sql, connection, chunksize=batch_size):
+                df = self.__type_validation__(df)
+                yield df if len(df.columns) > 1 else df[df.columns[0]]
+
         def read(connection: Connection):
             df = pd.read_sql(self.sql, connection)
             df = self.__type_validation__(df)
             return df if len(df.columns) > 1 else df[df.columns[0]]
 
         if limit is not None:
-            return self.copy(limit=limit).df(asynchronous=asynchronous)
+            return self.copy(limit=limit).df(asynchronous=asynchronous, batch_size=batch_size)
         else:
-            return self.schema.database.do(read, asynchronous=asynchronous)
+            if batch_size is not None:
+                return self.schema.database.batch(batch_read, asynchronous=asynchronous)
+            else:
+                return self.schema.database.do(read, asynchronous=asynchronous)
 
     def __len__(self):
         return self.size

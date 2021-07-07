@@ -25,7 +25,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 
 name = 'pandasdb'
-version = '0.1.24'
+version = '0.1.25'
 release = version
 
 setup(name=name,
