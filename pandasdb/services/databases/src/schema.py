@@ -43,7 +43,7 @@ class Schema(LazyLoader, Representable):
         # @do:format
 
     @property
-    @lru_cache
+    @lru_cache()
     def graph(self):
         graph = self.database.inspect(lambda inspect: inspect.get_sorted_table_and_fkc_names(schema=self.name),
                                       timeout=20)

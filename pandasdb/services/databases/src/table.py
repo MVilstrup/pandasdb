@@ -97,7 +97,7 @@ class Table(LazyLoader, Representable):
         return ILOC(self)
 
     @property
-    @lru_cache
+    @lru_cache()
     def size(self):
         full_table_name = f"{self.schema.database.name}.{self.schema.name}.{self.name}"
         return self.schema.database.do(lambda conn: conn.scalar(f"SELECT COUNT(*) FROM {full_table_name}"))
@@ -149,7 +149,7 @@ class Table(LazyLoader, Representable):
 
         return df
 
-    @lru_cache
+    @lru_cache()
     def head(self, limit=5):
         try:
             df = self.df(limit)
